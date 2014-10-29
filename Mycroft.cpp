@@ -3,7 +3,14 @@
 #include <string.h>
 #include <math.h>
 #include "glut.h"
-
+/*Simple HELP
+A:Turn left
+D:Turn right
+W:Move forward
+S:Move backward
+Z:Move upward
+C:Move downward
+*/
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
