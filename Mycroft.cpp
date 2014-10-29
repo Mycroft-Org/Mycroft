@@ -32,7 +32,7 @@ void updateView(int width, int height)
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
-		gluPerspective(60, whRatio, 1, 100);
+		gluPerspective(60, whRatio, 0.1, 100);
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
@@ -70,28 +70,37 @@ void key(unsigned char k, int x, int y)
 
 	case ' ': {bAnim = !bAnim; break; }
 	case 'o': {bWire = !bWire; break; }
-
-	case 'j': {
+	case 'z':{
+		center[1] = center[1] + fDistance;
+		eye[1] = eye[1] + fDistance;
+		break; 
+	}
+	case 'c':{
+		center[1] = center[1] - fDistance;
+		eye[1] = eye[1] - fDistance;
+		break;
+	}
+	case 'a': {
 		lrRotate = lrRotate - rotateEPS;
 		center[0] = eye[0] + D*cos(lrRotate);
 		center[2] = eye[2] + D*sin(lrRotate);
 		break;
 	}
 
-	case 'l': {
+	case 'd': {
 		lrRotate = lrRotate + rotateEPS;
 		center[0] = eye[0] + D*cos(lrRotate);
 		center[2] = eye[2] + D*sin(lrRotate);
 		break;
 	}
-	case 'z': {
+	case 'w': {
 		eye[0] = eye[0] + fDistance*cos(lrRotate);
 		eye[2] = eye[2] + fDistance*sin(lrRotate);
 		center[0] = center[0] + fDistance*cos(lrRotate);
 		center[2] = center[2] + fDistance*sin(lrRotate);
 		break;
 	}
-	case 'c': {
+	case 's': {
 		eye[0] = eye[0] - fDistance*cos(lrRotate);
 		eye[2] = eye[2] - fDistance*sin(lrRotate);
 		center[0] = center[0] - fDistance*cos(lrRotate);
