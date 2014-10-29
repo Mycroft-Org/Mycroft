@@ -39,7 +39,7 @@ void updateView(int width, int height)
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
-		gluPerspective(60, whRatio, 0.1, 100);
+		gluPerspective(45, whRatio, 0.1, 100);
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
@@ -118,7 +118,10 @@ void key(unsigned char k, int x, int y)
 }
 void draw()
 {
+    float amplifier = 10;
+
     glPushMatrix();
+    glScalef(amplifier, amplifier, amplifier);
     glRotatef(-90, 1, 0, 0);
     DrawWall();
     glPopMatrix();
