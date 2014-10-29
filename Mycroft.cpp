@@ -14,7 +14,7 @@ float lrRotate = -0.5*Pi;
 float udRotate = 0;
 
 float D = 3.0;
-bool bPersp = false;
+bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
 
@@ -102,7 +102,10 @@ void key(unsigned char k, int x, int y)
 }
 void draw()
 {
-	glutSolidCube(1);
+    glPushMatrix();
+    glRotatef(-90, 1, 0, 0);
+    DrawWall();
+    glPopMatrix();
 }
 void getFPS()
 {
@@ -168,16 +171,11 @@ void redraw()
 	glEnable(GL_LIGHT0);
 
 
-
 	glRotatef(fRotate, 0, 1.0f, 0);
-	if (bAnim) fRotate += 0.5f;
-	draw();
-
-
 
 	if (bAnim) fRotate += 0.5f;
-
-    DrawWall();
+    
+    draw();
 
 	getFPS();
 
