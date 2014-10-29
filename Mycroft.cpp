@@ -1,8 +1,9 @@
 #include <stdlib.h>
-#include "glut.h" 
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "glut.h"
+
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
