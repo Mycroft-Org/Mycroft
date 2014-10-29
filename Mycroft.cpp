@@ -1,7 +1,3 @@
-// glutEx1.cpp : 定义控制台应用程序的入口点。
-//
-//注意FPS函数的应用
-
 #include <stdlib.h>
 #include "glut.h" 
 #include <stdio.h>
@@ -10,7 +6,7 @@
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
-float fScale = 1.0f;	// set inital scale value to 1.0f
+float fScale = 1.0f;	
 float fDistance = 0.2f;
 float rotateEPS = 3.0*Pi / 180;
 float lrRotate = -0.5*Pi;
@@ -28,10 +24,10 @@ int wWidth = 0;
 void DrawWall();
 void updateView(int width, int height)
 {
-	glViewport(0, 0, width, height);						// Reset The Current Viewport
+	glViewport(0, 0, width, height);						
 
-	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-	glLoadIdentity();									// Reset The Projection Matrix
+	glMatrixMode(GL_PROJECTION);						
+	glLoadIdentity();									
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
@@ -39,14 +35,14 @@ void updateView(int width, int height)
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glMatrixMode(GL_MODELVIEW);							
 }
 
 void reshape(int width, int height)
 {
-	if (height == 0)										// Prevent A Divide By Zero By
+	if (height == 0)										
 	{
-		height = 1;										// Making Height Equal One
+		height = 1;										
 	}
 
 	wHeight = height;
@@ -126,21 +122,21 @@ void getFPS()
 
 	char *c;
 	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵
-	glOrtho(0, 480, 0, 480, -1, 1);// 位置正投影
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPushMatrix();// 保存原矩阵
-	glLoadIdentity();// 装入单位矩阵*/
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, 480, 0, 480, -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 	glRasterPos2f(10, 10);
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
-	glMatrixMode(GL_PROJECTION);// 选择投影矩阵
-	glPopMatrix();// 重置为原保存矩阵
-	glMatrixMode(GL_MODELVIEW);// 选择Modelview矩阵
-	glPopMatrix();// 重置为原保存矩阵
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -148,11 +144,11 @@ void redraw()
 {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();									// Reset The Current Modelview Matrix
+	glLoadIdentity();									
 
 	gluLookAt(eye[0], eye[1], eye[2],
 		center[0], center[1], center[2],
-		0, 1, 0);				// 场景（0，0，0）的视点中心 (0,5,50)，Y轴向上
+		0, 1, 0);				
 
 	if (bWire) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -176,8 +172,6 @@ void redraw()
 	if (bAnim) fRotate += 0.5f;
 	draw();
 
-
-	//	Gen3DObjectList();
 
 
 	if (bAnim) fRotate += 0.5f;
