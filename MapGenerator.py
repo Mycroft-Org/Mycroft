@@ -51,7 +51,7 @@ wall_height = 1.0;
 wall_width = 0.2;
 
 
-file_wall = open("wall.cpp","w")
+file_wall = open("DrawWall.cpp","w")
 
 
 def printScript():

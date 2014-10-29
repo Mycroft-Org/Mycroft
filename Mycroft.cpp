@@ -25,7 +25,7 @@ bool bWire = false;
 int wHeight = 0;
 int wWidth = 0;
 
-
+void DrawWall();
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);						// Reset The Current Viewport
@@ -181,6 +181,8 @@ void redraw()
 
 
 	if (bAnim) fRotate += 0.5f;
+
+    DrawWall();
 
 	getFPS();
 
