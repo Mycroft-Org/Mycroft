@@ -50,7 +50,7 @@ float wall_col[][3] = {
 };
 
 float wall_height = 1.0;
-float wall_width = 0.2;
+float wall_width = 0.06;
 
 void DrawWall()
 {

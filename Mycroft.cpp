@@ -39,7 +39,7 @@ void updateView(int width, int height)
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
-		gluPerspective(45, whRatio, 0.1, 100);
+		gluPerspective(30, whRatio, 0.1, 100);
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
@@ -64,8 +64,8 @@ void idle()
 	glutPostRedisplay();
 }
 
-float eye[] = { 0, 0, 3 };
-float center[] = { 0, 0, 0 };
+float eye[] = { 0, 5, 3 };
+float center[] = { 0, 5, 0 };
 
 void key(unsigned char k, int x, int y)
 {
