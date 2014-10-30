@@ -20,7 +20,7 @@ float rotateEPS = 3.0*Pi / 180;
 float mouseRotateEPS = 0.05*Pi / 180;
 float lrRotate = -0.5*Pi;
 float udRotate = 0;
-
+float udRotateLim = 30 * Pi / 180;
 float D = 3.0;
 bool bPersp = true;
 bool bAnim = false;
@@ -164,13 +164,18 @@ void getFPS()
 	glEnable(GL_DEPTH_TEST);
 }
 void mouseRotate(){
-	float direction=0;
-	if (mouseX < wWidth*0.45) direction = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
-	else if (mouseX > wWidth*0.55) direction = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
-	else direction = 0;
-	lrRotate = lrRotate + direction*mouseRotateEPS;
+	float lrSpeed=0,udRadius=0;
+	if (mouseX < wWidth*0.45) lrSpeed = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
+	else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
+	else lrSpeed = 0;
+	lrRotate = lrRotate + lrSpeed*mouseRotateEPS;
 	center[0] = eye[0] + D*cos(lrRotate);
 	center[2] = eye[2] + D*sin(lrRotate);
+	if (mouseY < wHeight*0.40) udRadius = (+wHeight*0.40 - mouseY) / (wHeight*0.40);
+	else if (mouseY > wHeight*0.60) udRadius = (+wHeight*0.60 - mouseY) / (wHeight*0.40);
+	else udRadius = 0;
+	center[1] = eye[1] + D*sin(udRotateLim*udRadius);
+//	printf("%.2lf %.2lf\n",wHeight,udRadius);
 }
 void redraw()
 {
@@ -215,12 +220,13 @@ void processMousePassiveMotion(int x,int y)
 	double direction = 1.0;
 	//time=*/
 	mouseX = x;	
+	mouseY = y;
 }
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(480, 480);
+	glutInitWindowSize(800, 600);
 	int windowHandle = glutCreateWindow("Simple GLUT App");
 
 	glutDisplayFunc(redraw);
