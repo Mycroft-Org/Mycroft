@@ -51,6 +51,7 @@ float wall_col[][3] = {
 
 float wall_height = 1.0;
 float wall_width = 0.06;
+float amplifier = 10;
 
 void DrawWall()
 {
@@ -66,6 +67,7 @@ void DrawWall()
         center_y = (wall_row[i][0]);
         scale_x = wall_row[i][2] - wall_row[i][1];
         glPushMatrix();
+        glScalef(amplifier, amplifier, amplifier);
         glTranslatef(center_x, center_y, center_z);
         glScalef(scale_x, scale_y, scale_z);
         glutSolidCube(1.0);
@@ -81,9 +83,28 @@ void DrawWall()
         center_x = (wall_col[i][0]);
         scale_y = wall_col[i][2] - wall_col[i][1];
         glPushMatrix();
+        glScalef(amplifier, amplifier, amplifier);
         glTranslatef(center_x, center_y, center_z);
         glScalef(scale_x, scale_y, scale_z);
         glutSolidCube(1.0);
         glPopMatrix();
     }
+}
+
+bool WallBlock(float x, float y)
+{
+    x = x / amplifier;
+    y = - y / amplifier;
+    // Row Walls
+    for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
+        if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_col[i][0] - wall_width / 2 && y <= wall_col[i][0] + wall_width / 2) 
+            return true;
+    }
+
+    // Column Walls
+    for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
+        if (y >= wall_col[i][1] && y <= wall_col[i][2] && x >= wall_col[i][0] - wall_width / 2 && x <= wall_col[i][0] + wall_width / 2)
+            return true;        
+    }
+    return false;
 }

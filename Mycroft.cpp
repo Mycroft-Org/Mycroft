@@ -30,7 +30,10 @@ bool bWire = false;
 int wHeight = 0;
 int wWidth = 0;
 int mouseX = 0, mouseY = 0;
+
 void DrawWall();
+bool WallBlock(float x, float y);
+
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);						
@@ -70,6 +73,7 @@ float center[] = { 0, 5, 0 };
 
 void key(unsigned char k, int x, int y)
 {
+    float eye0, eye2;
 	switch (k)
 	{
 	case 27:
@@ -101,28 +105,35 @@ void key(unsigned char k, int x, int y)
 		center[2] = eye[2] + D*sin(lrRotate);
 		break;
 	}
-	case 'w': {
-		eye[0] = eye[0] + fDistance*cos(lrRotate);
-		eye[2] = eye[2] + fDistance*sin(lrRotate);
-		center[0] = center[0] + fDistance*cos(lrRotate);
-		center[2] = center[2] + fDistance*sin(lrRotate);
+	case 'w': 
+        eye0 = eye[0] + fDistance*cos(lrRotate);
+        eye2 = eye[2] + fDistance*sin(lrRotate);
+        if (!WallBlock(eye0, eye2))
+        {
+            eye[0] = eye0;
+            eye[2] = eye2;
+		    center[0] = center[0] + fDistance*cos(lrRotate);
+		    center[2] = center[2] + fDistance*sin(lrRotate);
+        }
+
 		break;
-	}
 	case 's': {
-		eye[0] = eye[0] - fDistance*cos(lrRotate);
-		eye[2] = eye[2] - fDistance*sin(lrRotate);
-		center[0] = center[0] - fDistance*cos(lrRotate);
-		center[2] = center[2] - fDistance*sin(lrRotate);
+		eye0 = eye[0] - fDistance*cos(lrRotate);
+		eye2 = eye[2] - fDistance*sin(lrRotate);
+        if (!WallBlock(eye0, eye2)) {
+            eye[0] = eye0;
+            eye[2] = eye2;
+		    center[0] = center[0] - fDistance*cos(lrRotate);
+		    center[2] = center[2] - fDistance*sin(lrRotate);
+        }
+
 		break;
 	}
 	}
 }
 void draw()
 {
-    float amplifier = 10;
-
     glPushMatrix();
-    glScalef(amplifier, amplifier, amplifier);
     glRotatef(-90, 1, 0, 0);
     DrawWall();
     glPopMatrix();
