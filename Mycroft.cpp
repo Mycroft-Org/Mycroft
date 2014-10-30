@@ -17,6 +17,7 @@ float fRotate;
 float fScale = 1.0f;	
 float fDistance = 0.2f;
 float rotateEPS = 3.0*Pi / 180;
+float mouseRotateEPS = 0.05*Pi / 180;
 float lrRotate = -0.5*Pi;
 float udRotate = 0;
 
@@ -28,7 +29,7 @@ bool bWire = false;
 
 int wHeight = 0;
 int wWidth = 0;
-
+int mouseX = 0, mouseY = 0;
 void DrawWall();
 void updateView(int width, int height)
 {
@@ -162,7 +163,15 @@ void getFPS()
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
-
+void mouseRotate(){
+	float direction=0;
+	if (mouseX < wWidth*0.45) direction = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
+	else if (mouseX > wWidth*0.55) direction = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
+	else direction = 0;
+	lrRotate = lrRotate + direction*mouseRotateEPS;
+	center[0] = eye[0] + D*cos(lrRotate);
+	center[2] = eye[2] + D*sin(lrRotate);
+}
 void redraw()
 {
 
@@ -191,7 +200,7 @@ void redraw()
 
 
 	glRotatef(fRotate, 0, 1.0f, 0);
-
+	mouseRotate();
 	if (bAnim) fRotate += 0.5f;
     
     draw();
@@ -200,7 +209,13 @@ void redraw()
 
 	glutSwapBuffers();
 }
-
+void processMousePassiveMotion(int x,int y)
+{
+/*	static int time, timebase = 0;
+	double direction = 1.0;
+	//time=*/
+	mouseX = x;	
+}
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
@@ -212,7 +227,7 @@ int main(int argc, char *argv[])
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
 	glutIdleFunc(idle);
-
+	glutPassiveMotionFunc(processMousePassiveMotion);
 	glutMainLoop();
 	return 0;
 }
