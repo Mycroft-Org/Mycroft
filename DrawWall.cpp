@@ -117,7 +117,7 @@ bool WallBlock(float x, float y)
     y = - y / amplifier;
     // Row Walls
     for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
-        if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_col[i][0] - wall_width / 2 && y <= wall_col[i][0] + wall_width / 2) 
+        if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_width / 2 && y <= wall_row[i][0] + wall_width / 2) 
             return true;
     }
 

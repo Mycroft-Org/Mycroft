@@ -121,9 +121,8 @@ void key(unsigned char k, int x, int y)
 		    center[0] = center[0] + fDistance*cos(lrRotate);
 		    center[2] = center[2] + fDistance*sin(lrRotate);
         }
-
 		break;
-	case 's': {
+	case 's':
 		eye0 = eye[0] - fDistance*cos(lrRotate);
 		eye2 = eye[2] - fDistance*sin(lrRotate);
         if (!WallBlock(eye0, eye2)) {
@@ -132,9 +131,7 @@ void key(unsigned char k, int x, int y)
 		    center[0] = center[0] - fDistance*cos(lrRotate);
 		    center[2] = center[2] - fDistance*sin(lrRotate);
         }
-
 		break;
-	}
 	}
 }
 void draw()
