@@ -17,11 +17,12 @@ float fRotate;
 float fScale = 1.0f;	
 float fDistance = 0.2f;
 float rotateEPS = 3.0*Pi / 180;
-float mouseRotateEPS = 0.05*Pi / 180;
+float mouseRotateEPS = 0.2*Pi / 180;
 float lrRotate = -0.5*Pi;
 float udRotate = 0;
 float udRotateLim = 30 * Pi / 180;
 float D = 3.0;
+float frameRate = 60;
 bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
@@ -191,6 +192,12 @@ void mouseRotate(){
 void redraw()
 {
 
+	static int time, timebase = 0;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase <= 1000.0 / frameRate)  return;
+		else timebase = time;
+
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();									
 
@@ -214,14 +221,14 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 
-
+	
 	glRotatef(fRotate, 0, 1.0f, 0);
-	mouseRotate();
+	
 	if (bAnim) fRotate += 0.5f;
-    
+	mouseRotate();
     draw();
-
 	getFPS();
+
 
 	glutSwapBuffers();
 }
