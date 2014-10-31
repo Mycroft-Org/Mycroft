@@ -57,7 +57,7 @@ void reshape(int width, int height)
 {
 	if (height == 0)										
 	{
-		height = 1;										
+		height = 1;							
 	}
 
 	wHeight = height;
@@ -148,7 +148,8 @@ void getFPS()
 {
 	static int frame = 0, time, timebase = 0;
 	static char buffer[256];
-
+	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+	glColor3fv(white);
 	char mode[64];
 	strcpy_s(mode, "naive");
 
@@ -257,7 +258,7 @@ void redraw()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 5, 5, 5, 1 };
+	GLfloat light_pos[] = { 0, 0, 10, 1 };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);

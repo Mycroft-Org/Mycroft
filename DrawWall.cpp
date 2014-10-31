@@ -52,11 +52,27 @@ float wall_col[][3] = {
 float wall_height = 1.0;
 float wall_width = 0.06;
 float amplifier = 10;
-
+GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
+GLfloat mat_grey_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
+GLfloat mat_red_ambient[] = { 0.0, 0.0, 1.0, 1.0 };
+GLfloat mat_diffuse[] = { 0.1, 0.1, 0.8, 1.0 };
+GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat no_shininess[] = { 0.0 };
+GLfloat low_shininess[] = { 5.0 };
+GLfloat high_shininess[] = { 100.0 };
+GLfloat mat_emission[] = { 0.3, 0.2, 0.2, 0.0 };
+GLfloat wall_color[] = { 0, 1.0, 1.0, 1.0 };
 void DrawWall()
 {
     float center_x, center_y, center_z;
     float scale_x, scale_y, scale_z;
+	glPushMatrix();
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+	glColorMaterial(GL_FRONT, GL_AMBIENT);//使材质色跟踪当前颜色
+	glEnable(GL_COLOR_MATERIAL);
 
     // Row Walls
     center_z = wall_height / 2;
@@ -67,6 +83,7 @@ void DrawWall()
         center_y = (wall_row[i][0]);
         scale_x = wall_row[i][2] - wall_row[i][1];
         glPushMatrix();
+		glColor3fv(wall_color);
         glScalef(amplifier, amplifier, amplifier);
         glTranslatef(center_x, center_y, center_z);
         glScalef(scale_x, scale_y, scale_z);
@@ -89,6 +106,8 @@ void DrawWall()
         glutSolidCube(1.0);
         glPopMatrix();
     }
+	glPopMatrix();
+
 }
 
 bool WallBlock(float x, float y)
