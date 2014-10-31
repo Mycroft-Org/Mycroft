@@ -55,7 +55,7 @@ float amplifier = 10;
 GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat mat_grey_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
 GLfloat mat_red_ambient[] = { 0.0, 0.0, 1.0, 1.0 };
-GLfloat mat_diffuse[] = { 0.1, 0.1, 0.8, 1.0 };
+GLfloat mat_diffuse[] = { 0.1, 0.1, 0.1, 1.0 };
 GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat no_shininess[] = { 0.0 };
 GLfloat low_shininess[] = { 5.0 };
@@ -106,6 +106,7 @@ void DrawWall()
         glutSolidCube(1.0);
         glPopMatrix();
     }
+	glDisable(GL_COLOR_MATERIAL);
 	glPopMatrix();
 
 }
