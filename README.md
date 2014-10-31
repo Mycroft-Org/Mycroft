@@ -4,9 +4,11 @@ Mycroft
 Final Project for Computer Graphics Course
 
 ## Simple HELP
-- A:Turn left
-- D:Turn right
+- Mouse:Change view
 - W:Move forward
 - S:Move backward
 - Z:Move upward
 - C:Move downward
+- R:Accelerate
+- F:Decelerate
+- M:Change mouse mode
