@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <windows.h>
 #include "glut.h"
 /*Simple HELP
 A:Turn left
@@ -17,12 +18,13 @@ float fRotate;
 float fScale = 1.0f;	
 float fDistance = 0.2f;
 float rotateEPS = 3.0*Pi / 180;
-float mouseRotateEPS = 0.2*Pi / 180;
+float mouseRotateEPS = 0.04*Pi / 180;
 float lrRotate = -0.5*Pi;
 float udRotate = 0;
 float udRotateLim = 30 * Pi / 180;
 float D = 3.0;
 float frameRate = 60;
+bool mouseMode = true;
 bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
@@ -83,6 +85,7 @@ void key(unsigned char k, int x, int y)
 
 	case ' ': {bAnim = !bAnim; break; }
 	case 'o': {bWire = !bWire; break; }
+	case 'm': {mouseMode = !mouseMode; break; }
 	case 'z':{
 		center[1] = center[1] + fDistance;
 		eye[1] = eye[1] + fDistance;
@@ -175,11 +178,15 @@ void getFPS()
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
-void mouseRotate(){
+void mouseRotate_V1(){
 	float lrSpeed=0,udRadius=0;
+	static int time, timebase = 0;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase <= 4)  return;
+		else timebase = time;
 	if (mouseX < wWidth*0.45) lrSpeed = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
-	else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
-	else lrSpeed = 0;
+		else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
+			else lrSpeed = 0;
 	lrRotate = lrRotate + lrSpeed*mouseRotateEPS;
 	center[0] = eye[0] + D*cos(lrRotate);
 	center[2] = eye[2] + D*sin(lrRotate);
@@ -187,10 +194,43 @@ void mouseRotate(){
 	else if (mouseY > wHeight*0.60) udRadius = (+wHeight*0.60 - mouseY) / (wHeight*0.40);
 	else udRadius = 0;
 	center[1] = eye[1] + D*sin(udRotateLim*udRadius);
-//	printf("%.2lf %.2lf\n",wHeight,udRadius);
+}
+void mouseRotate_V2(){
+	float lrSpeed = 0.1 * Pi / 180, udSpeed = -0.1 * Pi / 180;
+	static int time, timebase = 0;
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase <= 4)  return;
+	else timebase = time;
+	POINT p;
+	GetCursorPos(&p);
+	//printf("%ld %ld\n", p.x, p.y);
+	mouseX = p.x; 
+	mouseY = p.y;
+//	printf("%ld %ld\n", mouseX, mouseY);
+//	printf("%d %.2lf %.2lf\n", mouseY, 1.0*wHeight / 2, wHeight*1.0 / 2);
+	if (fabs((mouseX - 1.0*wWidth / 2) / (wWidth))>0.0)
+	{
+		lrRotate = lrRotate + (mouseX - wWidth*1.0 / 2)*lrSpeed;
+		center[0] = eye[0] + D*cos(lrRotate);
+		center[2] = eye[2] + D*sin(lrRotate);
+	}
+	if (fabs((mouseY - 1.0*wHeight / 2) / (wHeight)) > 0.0)
+	{
+		udRotate = udRotate + (mouseY - wHeight*1.0 / 2)*udSpeed;
+		if (udRotate > udRotateLim) udRotate = udRotateLim;
+		if (udRotate < -udRotateLim) udRotate = -udRotateLim;
+		center[1] = eye[1] + D*sin(udRotate);
+	}
+	SetCursorPos(wWidth*1.0 / 2, wHeight*1.0 / 2);
+//	GetCursorPos(&p);
+//	printf("%ld %ld\n", p.x, p.y);
+	
+
 }
 void redraw()
 {
+	if (mouseMode==true) mouseRotate_V2();
+		else mouseRotate_V1();
 
 	static int time, timebase = 0;
 	time = glutGet(GLUT_ELAPSED_TIME);
@@ -222,10 +262,8 @@ void redraw()
 	glEnable(GL_LIGHT0);
 
 	
-	glRotatef(fRotate, 0, 1.0f, 0);
-	
-	if (bAnim) fRotate += 0.5f;
-	mouseRotate();
+	glRotatef(fRotate, 0, 1.0f, 0);	
+	if (bAnim) fRotate += 0.5f;	
     draw();
 	getFPS();
 
@@ -246,7 +284,7 @@ int main(int argc, char *argv[])
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
 	int windowHandle = glutCreateWindow("Simple GLUT App");
-
+	ShowCursor(FALSE);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
