@@ -3,13 +3,13 @@
 #include <string.h>
 #include <math.h>
 #include <windows.h>
-#include "glut.h"
+#include "glut.h" 
 /*Simple HELP
 A:Turn left
 D:Turn right
 W:Move forward
 S:Move backward
-Z:Move upward
+Z:Move upward 
 C:Move downward
 */
 const float Pi = 3.14159265359;
@@ -86,6 +86,8 @@ void key(unsigned char k, int x, int y)
 	case ' ': {bAnim = !bAnim; break; }
 	case 'o': {bWire = !bWire; break; }
 	case 'm': {mouseMode = !mouseMode; break; }
+	case 'r': fDistance = fDistance*1.2; break;
+	case 'f': fDistance = fDistance/1.2; break;
 	case 'z':{
 		center[1] = center[1] + fDistance;
 		eye[1] = eye[1] + fDistance;
