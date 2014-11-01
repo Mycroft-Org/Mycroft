@@ -19,7 +19,8 @@ C:Move downward
 #define HELP 4
 #define MAP_ON 5
 #define MAP_CLOSE 6
-
+extern float wall_row[][3];
+extern float wall_col[][3];
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
@@ -40,14 +41,16 @@ bool bWire = false;
 bool bShow = false;
 bool CURSOR = false;
 
+GLuint texGround,texwall;
+
 int windowHandle, subwindowHandle;
 int wHeight = 0;
 int wWidth = 0;
 int mouseX = 0, mouseY = 0;
 int tips_count = 6;
-void ShowMap_Little();
-void DrawWall();
 
+GLuint load_texture(const char* file_name);
+void ShowMap_Little();
 void DrawWall();
 void DrawTeapot();
 bool WallBlock(float x, float y);
@@ -284,6 +287,7 @@ void redraw()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_pos[] = { 0, 0, 10, 1 };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
@@ -291,13 +295,74 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texGround);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);
+	glTexCoord2f(0.0f, 5.0f); glVertex3f(100.0f, 0.0f, 0.0f);
+	glTexCoord2f(5.0f, 5.0f); glVertex3f(100.0f, 0.0f, -80.0f);
+	glTexCoord2f(5.0f, 0.0f); glVertex3f(0.0f, 0.0f, -80.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texwall);
+	for (int i = 0; i < 19; i++) {
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10*wall_row[i][1]-0.1f, 0.0f, -10*wall_row[i][0]+0.35f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10*wall_row[i][1]-0.1f, 10.0f, -10*wall_row[i][0]+0.35f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1]-0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1]-0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+		glEnd();
+	}
+	for (int i = 0; i < 24; i++) {
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f );
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
+		glEnd();
+	}
+	glDisable(GL_TEXTURE_2D);
 
 	glRotatef(fRotate, 0, 1.0f, 0);
 	if (bAnim) fRotate += 0.5f;
 	draw();
 	getFPS();
-
-
 	glutSwapBuffers();
 }
 
@@ -378,6 +443,8 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(800, 600);
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
+	texGround = load_texture("2.bmp");
+	texwall = load_texture("1.bmp");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
