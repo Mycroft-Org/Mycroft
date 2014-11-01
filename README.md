@@ -13,4 +13,3 @@ Final Project for Computer Graphics Course
 - R:Accelerate
 - F:Decelerate
 - M:Change mouse mode
-- Space:Show/Hide mouse
