@@ -262,6 +262,75 @@ void mouseRotate_V2(){
 
 
 }
+void textureGround()
+{
+	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
+	glBindTexture(GL_TEXTURE_2D, texGround);
+	glBegin(GL_QUADS);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);
+	glTexCoord2f(0.0f, 5.0f); glVertex3f(100.0f, 0.0f, 0.0f);
+	glTexCoord2f(5.0f, 5.0f); glVertex3f(100.0f, 0.0f, -80.0f);
+	glTexCoord2f(5.0f, 0.0f); glVertex3f(0.0f, 0.0f, -80.0f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+void textureWall()
+{
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texwall);
+	for (int i = 0; i < 19; i++) {
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
+		glEnd();
+	}
+	for (int i = 0; i < 24; i++) {
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
+		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
+		glEnd();
+	}
+	glDisable(GL_TEXTURE_2D);
+}
 void redraw()
 {
 	if (mouseMode == true) mouseRotate_V2();
@@ -291,83 +360,19 @@ void redraw()
 	glEnable(GL_LIGHTING);
 	
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
+
 	GLfloat light_pos[] = { 0, 0, 10, 1 };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glEnable(GL_LIGHT0);
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texGround);
-	glBegin(GL_QUADS);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);
-	glTexCoord2f(0.0f, 5.0f); glVertex3f(100.0f, 0.0f, 0.0f);
-	glTexCoord2f(5.0f, 5.0f); glVertex3f(100.0f, 0.0f, -80.0f);
-	glTexCoord2f(5.0f, 0.0f); glVertex3f(0.0f, 0.0f, -80.0f);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
-	/*glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texwall);
-	for (int i = 0; i < 19; i++) {
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10*wall_row[i][1]-0.1f, 0.0f, -10*wall_row[i][0]+0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10*wall_row[i][1]-0.1f, 10.0f, -10*wall_row[i][0]+0.35f);
-		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1]-0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1]-0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_row[i][2]+0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-		glEnd();
-	}
-	for (int i = 0; i < 24; i++) {
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f );
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
-		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(5.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
-		glTexCoord2f(5.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1]+0.1f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1]+0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2]-0.1f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
-		glEnd();
-	}
-	glDisable(GL_TEXTURE_2D);*/
-
-	glRotatef(fRotate, 0, 1.0f, 0);
-	if (bAnim) fRotate += 0.5f;
+	glEnable(GL_LIGHT0);glEnable(GL_TEXTURE_2D);
+	textureGround();
+	textureWall();
 	draw();
 	getFPS();
 	glutSwapBuffers();
+	/*glRotatef(fRotate, 0, 1.0f, 0);
+	if (bAnim) fRotate += 0.5f;*/
 }
 
 void redraw_little()
@@ -448,6 +453,7 @@ int main(int argc, char *argv[])
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
 	texGround = load_texture("2.bmp");
+	printf("%d\n", texGround);
 	texwall = load_texture("1.bmp");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
