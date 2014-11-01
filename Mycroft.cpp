@@ -93,71 +93,63 @@ float center[] = { 0, 5, 0 };
 void key(unsigned char k, int x, int y)
 {
 	float eye0, eye2;
-	switch (k)
-	{
-	case 27:
-	case 'q': {exit(0); break; }
-	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
+    switch (k) {
+        case 27:
+        case 'q': {exit(0); break; }
+        case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
+        //case ' ': {bAnim = !bAnim; break; }
+        case 'o': {bWire = !bWire; break; }
+        case 'm': {mouseMode = !mouseMode; break; }
+        case 'r': fDistance = fDistance*1.2; break;
+        case 'f': fDistance = fDistance / 1.2; break;
+        case 'z':
+            center[1] = center[1] + fDistance;
+            eye[1] = eye[1] + fDistance;
+            break;
+        case 'c':
+            center[1] = center[1] - fDistance;
+            eye[1] = eye[1] - fDistance;
+            break;
+        case 'a':
+            lrRotate = lrRotate - rotateEPS;
+            center[0] = eye[0] + D*cos(lrRotate);
+            center[2] = eye[2] + D*sin(lrRotate);
+            break;
+        case 'd':
+            lrRotate = lrRotate + rotateEPS;
+            center[0] = eye[0] + D*cos(lrRotate);
+            center[2] = eye[2] + D*sin(lrRotate);
+            break;
 
-		//case ' ': {bAnim = !bAnim; break; }
-	case 'o': {bWire = !bWire; break; }
-	case 'm': {mouseMode = !mouseMode; break; }
-	case 'r': fDistance = fDistance*1.2; break;
-	case 'f': fDistance = fDistance / 1.2; break;
-	case 'z':{
-				 center[1] = center[1] + fDistance;
-				 eye[1] = eye[1] + fDistance;
-				 break;
-	}
-	case 'c':{
-				 center[1] = center[1] - fDistance;
-				 eye[1] = eye[1] - fDistance;
-				 break;
-	}
-	case 'a': {
-				  lrRotate = lrRotate - rotateEPS;
-				  center[0] = eye[0] + D*cos(lrRotate);
-				  center[2] = eye[2] + D*sin(lrRotate);
-				  break;
-	}
-
-	case 'd': {
-				  lrRotate = lrRotate + rotateEPS;
-				  center[0] = eye[0] + D*cos(lrRotate);
-				  center[2] = eye[2] + D*sin(lrRotate);
-				  break;
-	}
-	case 'w':
-		eye0 = eye[0] + fDistance*cos(lrRotate);
-		eye2 = eye[2] + fDistance*sin(lrRotate);
-		if (!WallBlock(eye0, eye2))
-		{
-			eye[0] = eye0;
-			eye[2] = eye2;
-			center[0] = center[0] + fDistance*cos(lrRotate);
-			center[2] = center[2] + fDistance*sin(lrRotate);
-		}
-		if (TeapotAttack(eye0, eye2))
-		{
-			eye[0] -= 5 * fDistance*cos(lrRotate);
-			eye[2] -= 5 * fDistance*sin(lrRotate);
-		}
-		break;
-	case 's':
-		eye0 = eye[0] - fDistance*cos(lrRotate);
-		eye2 = eye[2] - fDistance*sin(lrRotate);
-		if (!WallBlock(eye0, eye2)) {
-			eye[0] = eye0;
-			eye[2] = eye2;
-			center[0] = center[0] - fDistance*cos(lrRotate);
-			center[2] = center[2] - fDistance*sin(lrRotate);
-		}
-		break;
-	case ' ':
-		CURSOR = !CURSOR;
-		ShowCursor(CURSOR);
-		break;
-	}
+        case 'w':
+            eye0 = eye[0] + fDistance*cos(lrRotate);
+            eye2 = eye[2] + fDistance*sin(lrRotate);
+            if (!WallBlock(eye0, eye2)) {
+                eye[0] = eye0;
+                eye[2] = eye2;
+                center[0] = center[0] + fDistance*cos(lrRotate);
+                center[2] = center[2] + fDistance*sin(lrRotate);
+            }
+            if (TeapotAttack(eye0, eye2)) {
+                eye[0] -= 5 * fDistance*cos(lrRotate);
+                eye[2] -= 5 * fDistance*sin(lrRotate);
+            }
+            break;
+        case 's':
+            eye0 = eye[0] - fDistance*cos(lrRotate);
+            eye2 = eye[2] - fDistance*sin(lrRotate);
+            if (!WallBlock(eye0, eye2)) {
+                eye[0] = eye0;
+                eye[2] = eye2;
+                center[0] = center[0] - fDistance*cos(lrRotate);
+                center[2] = center[2] - fDistance*sin(lrRotate);
+            }
+            break;
+        case ' ':
+            CURSOR = !CURSOR;
+            ShowCursor(CURSOR);
+            break;
+    }
 }
 void draw()
 {
