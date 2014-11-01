@@ -41,38 +41,37 @@ GLuint load_texture(const char* file_name)
 		fclose(pFile);
 		return 0;
 	}
-		GLint max;
-		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max);
-		if (!power_of_two(width)
-			|| !power_of_two(height)
-			|| width > max
-			|| height > max)
+	GLint max;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max);
+	if (!power_of_two(width)
+		|| !power_of_two(height)
+		|| width > max
+		|| height > max)
+	{
+		const GLint new_width = 256;
+		const GLint new_height = 256; 
+		GLint new_line_bytes, new_total_bytes;
+		GLubyte* new_pixels = 0;
+		new_line_bytes = new_width * 3;
+		while (new_line_bytes % 4 != 0)
+			++new_line_bytes;
+		new_total_bytes = new_line_bytes * new_height;
+		new_pixels = (GLubyte*)malloc(new_total_bytes);
+		if (new_pixels == 0)
 		{
-			const GLint new_width = 256;
-			const GLint new_height = 256; 
-			GLint new_line_bytes, new_total_bytes;
-			GLubyte* new_pixels = 0;
-			new_line_bytes = new_width * 3;
-			while (new_line_bytes % 4 != 0)
-				++new_line_bytes;
-			new_total_bytes = new_line_bytes * new_height;
-			new_pixels = (GLubyte*)malloc(new_total_bytes);
-			if (new_pixels == 0)
-			{
-				free(pixels);
-				fclose(pFile);
-				return 0;
-			}
-
-			gluScaleImage(GL_RGB,
-				width, height, GL_UNSIGNED_BYTE, pixels,
-				new_width, new_height, GL_UNSIGNED_BYTE, new_pixels);
-
 			free(pixels);
-			pixels = new_pixels;
-			width = new_width;
-			height = new_height;
+			fclose(pFile);
+			return 0;
 		}
+
+		gluScaleImage(GL_RGB,
+			width, height, GL_UNSIGNED_BYTE, pixels,
+			new_width, new_height, GL_UNSIGNED_BYTE, new_pixels);
+		free(pixels);
+		pixels = new_pixels;
+		width = new_width;
+		height = new_height;
+	}
 	glGenTextures(1, &texture_ID);
 	if (texture_ID == 0)
 	{
