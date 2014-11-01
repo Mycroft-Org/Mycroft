@@ -151,10 +151,6 @@ void key(unsigned char k, int x, int y)
                 center[2] = center[2] - fDistance*sin(lrRotate);
             }
             break;
-        case ' ':
-            CURSOR = !CURSOR;
-            ShowCursor(CURSOR);
-            break;
     }
 }
 void draw()
