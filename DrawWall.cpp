@@ -128,3 +128,12 @@ bool WallBlock(float x, float y)
     }
     return false;
 }
+
+void DrawTeapot(){
+	glPushMatrix();
+	glTranslatef(0, 0, 0);
+	glRotatef(90, 1, 0, 0);
+	glScalef(3,3,3);
+	glutSolidTeapot(1);
+	glPopMatrix();
+}

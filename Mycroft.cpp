@@ -35,6 +35,7 @@ int wWidth = 0;
 int mouseX = 0, mouseY = 0;
 
 void DrawWall();
+void DrawTeapot();
 bool WallBlock(float x, float y);
 
 void updateView(int width, int height)
@@ -139,6 +140,7 @@ void draw()
     glPushMatrix();
     glRotatef(-90, 1, 0, 0);
     DrawWall();
+	DrawTeapot();
     glPopMatrix();
 }
 void getFPS()
