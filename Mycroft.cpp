@@ -9,13 +9,21 @@ A:Turn left
 D:Turn right
 W:Move forward
 S:Move backward
-Z:Move upward 
+Z:Move upward
 C:Move downward
 */
+
+#define MAP 1
+#define GRAPHYICS 2
+#define CONTROL 3
+#define HELP 4
+#define MAP_ON 5
+#define MAP_CLOSE 6
+
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
-float fScale = 1.0f;	
+float fScale = 1.0f;
 float fDistance = 0.2f;
 float rotateEPS = 3.0*Pi / 180;
 float mouseRotateEPS = 0.04*Pi / 180;
@@ -24,15 +32,21 @@ float udRotate = 0;
 float udRotateLim = 30 * Pi / 180;
 float D = 3.0;
 float frameRate = 60;
+
 bool mouseMode = true;
 bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
+bool bShow = false;
+bool CURSOR = false;
 
-
+int windowHandle, subwindowHandle;
 int wHeight = 0;
 int wWidth = 0;
 int mouseX = 0, mouseY = 0;
+int tips_count = 6;
+void ShowMap_Little();
+void DrawWall();
 
 void DrawWall();
 void DrawTeapot();
@@ -41,10 +55,10 @@ bool TeapotAttack(float x, float y);
 
 void updateView(int width, int height)
 {
-	glViewport(0, 0, width, height);						
+	glViewport(0, 0, width, height);
 
-	glMatrixMode(GL_PROJECTION);						
-	glLoadIdentity();									
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
@@ -52,14 +66,14 @@ void updateView(int width, int height)
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
-	glMatrixMode(GL_MODELVIEW);							
+	glMatrixMode(GL_MODELVIEW);
 }
 
 void reshape(int width, int height)
 {
-	if (height == 0)										
+	if (height == 0)
 	{
-		height = 1;							
+		height = 1;
 	}
 
 	wHeight = height;
@@ -78,77 +92,91 @@ float center[] = { 0, 5, 0 };
 
 void key(unsigned char k, int x, int y)
 {
-    float eye0, eye2;
+	float eye0, eye2;
 	switch (k)
 	{
 	case 27:
 	case 'q': {exit(0); break; }
 	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
 
-	case ' ': {bAnim = !bAnim; break; }
+		//case ' ': {bAnim = !bAnim; break; }
 	case 'o': {bWire = !bWire; break; }
 	case 'm': {mouseMode = !mouseMode; break; }
 	case 'r': fDistance = fDistance*1.2; break;
-	case 'f': fDistance = fDistance/1.2; break;
+	case 'f': fDistance = fDistance / 1.2; break;
 	case 'z':{
-		center[1] = center[1] + fDistance;
-		eye[1] = eye[1] + fDistance;
-		break; 
+				 center[1] = center[1] + fDistance;
+				 eye[1] = eye[1] + fDistance;
+				 break;
 	}
 	case 'c':{
-		center[1] = center[1] - fDistance;
-		eye[1] = eye[1] - fDistance;
-		break;
+				 center[1] = center[1] - fDistance;
+				 eye[1] = eye[1] - fDistance;
+				 break;
 	}
 	case 'a': {
-		lrRotate = lrRotate - rotateEPS;
-		center[0] = eye[0] + D*cos(lrRotate);
-		center[2] = eye[2] + D*sin(lrRotate);
-		break;
+				  lrRotate = lrRotate - rotateEPS;
+				  center[0] = eye[0] + D*cos(lrRotate);
+				  center[2] = eye[2] + D*sin(lrRotate);
+				  break;
 	}
 
 	case 'd': {
-		lrRotate = lrRotate + rotateEPS;
-		center[0] = eye[0] + D*cos(lrRotate);
-		center[2] = eye[2] + D*sin(lrRotate);
-		break;
+				  lrRotate = lrRotate + rotateEPS;
+				  center[0] = eye[0] + D*cos(lrRotate);
+				  center[2] = eye[2] + D*sin(lrRotate);
+				  break;
 	}
-	case 'w': 
-        eye0 = eye[0] + fDistance*cos(lrRotate);
-        eye2 = eye[2] + fDistance*sin(lrRotate);
-        if (!WallBlock(eye0, eye2))
-        {
-            eye[0] = eye0;
-            eye[2] = eye2;
-		    center[0] = center[0] + fDistance*cos(lrRotate);
-		    center[2] = center[2] + fDistance*sin(lrRotate);
-        }
-		if (TeapotAttack(eye0,eye2))
+	case 'w':
+		eye0 = eye[0] + fDistance*cos(lrRotate);
+		eye2 = eye[2] + fDistance*sin(lrRotate);
+		if (!WallBlock(eye0, eye2))
 		{
-			eye[0] -= 5*fDistance*cos(lrRotate);
-			eye[2] -= 5*fDistance*sin(lrRotate);
+			eye[0] = eye0;
+			eye[2] = eye2;
+			center[0] = center[0] + fDistance*cos(lrRotate);
+			center[2] = center[2] + fDistance*sin(lrRotate);
+		}
+		if (TeapotAttack(eye0, eye2))
+		{
+			eye[0] -= 5 * fDistance*cos(lrRotate);
+			eye[2] -= 5 * fDistance*sin(lrRotate);
 		}
 		break;
 	case 's':
 		eye0 = eye[0] - fDistance*cos(lrRotate);
 		eye2 = eye[2] - fDistance*sin(lrRotate);
-        if (!WallBlock(eye0, eye2)) {
-            eye[0] = eye0;
-            eye[2] = eye2;
-		    center[0] = center[0] - fDistance*cos(lrRotate);
-		    center[2] = center[2] - fDistance*sin(lrRotate);
-        }
+		if (!WallBlock(eye0, eye2)) {
+			eye[0] = eye0;
+			eye[2] = eye2;
+			center[0] = center[0] - fDistance*cos(lrRotate);
+			center[2] = center[2] - fDistance*sin(lrRotate);
+		}
+		break;
+	case ' ':
+		CURSOR = !CURSOR;
+		ShowCursor(CURSOR);
 		break;
 	}
 }
 void draw()
 {
-    glPushMatrix();
-    glRotatef(-90, 1, 0, 0);
-    DrawWall();
+	glPushMatrix();
+	glRotatef(-90, 1, 0, 0);
+	DrawWall();
 	DrawTeapot();
-    glPopMatrix();
+	glPopMatrix();
 }
+void drawPos()
+{
+	glColor3f(1.0f, 0.0f, 0.0f);
+	GLfloat size = 10;
+	glPointSize(size);
+	glBegin(GL_POINTS);
+	glVertex3f((eye[0]) / 50 - 1.0f, (3 - eye[2]) / 50 - 1.0f, 0.0f);
+	glEnd();
+}
+
 void getFPS()
 {
 	static int frame = 0, time, timebase = 0;
@@ -187,14 +215,14 @@ void getFPS()
 	glEnable(GL_DEPTH_TEST);
 }
 void mouseRotate_V1(){
-	float lrSpeed=0,udRadius=0;
+	float lrSpeed = 0, udRadius = 0;
 	static int time, timebase = 0;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase <= 4)  return;
-		else timebase = time;
+	else timebase = time;
 	if (mouseX < wWidth*0.45) lrSpeed = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
-		else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
-			else lrSpeed = 0;
+	else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
+	else lrSpeed = 0;
 	lrRotate = lrRotate + lrSpeed*mouseRotateEPS;
 	center[0] = eye[0] + D*cos(lrRotate);
 	center[2] = eye[2] + D*sin(lrRotate);
@@ -212,10 +240,10 @@ void mouseRotate_V2(){
 	POINT p;
 	GetCursorPos(&p);
 	//printf("%ld %ld\n", p.x, p.y);
-	mouseX = p.x; 
+	mouseX = p.x;
 	mouseY = p.y;
-//	printf("%ld %ld\n", mouseX, mouseY);
-//	printf("%d %.2lf %.2lf\n", mouseY, 1.0*wHeight / 2, wHeight*1.0 / 2);
+	//	printf("%ld %ld\n", mouseX, mouseY);
+	//	printf("%d %.2lf %.2lf\n", mouseY, 1.0*wHeight / 2, wHeight*1.0 / 2);
 	if (fabs((mouseX - 1.0*wWidth / 2) / (wWidth))>0.0)
 	{
 		lrRotate = lrRotate + (mouseX - wWidth*1.0 / 2)*lrSpeed;
@@ -230,28 +258,28 @@ void mouseRotate_V2(){
 		center[1] = eye[1] + D*sin(udRotate);
 	}
 	SetCursorPos(wWidth*1.0 / 2, wHeight*1.0 / 2);
-//	GetCursorPos(&p);
-//	printf("%ld %ld\n", p.x, p.y);
-	
+	//	GetCursorPos(&p);
+	//	printf("%ld %ld\n", p.x, p.y);
+
 
 }
 void redraw()
 {
-	if (mouseMode==true) mouseRotate_V2();
-		else mouseRotate_V1();
+	if (mouseMode == true) mouseRotate_V2();
+	else mouseRotate_V1();
 
 	static int time, timebase = 0;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase <= 1000.0 / frameRate)  return;
-		else timebase = time;
+	else timebase = time;
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();									
+	glLoadIdentity();
 
 	gluLookAt(eye[0], eye[1], eye[2],
 		center[0], center[1], center[2],
-		0, 1, 0);				
+		0, 1, 0);
 
 	if (bWire) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -269,35 +297,99 @@ void redraw()
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glEnable(GL_LIGHT0);
 
-	
-	glRotatef(fRotate, 0, 1.0f, 0);	
-	if (bAnim) fRotate += 0.5f;	
-    draw();
+
+	glRotatef(fRotate, 0, 1.0f, 0);
+	if (bAnim) fRotate += 0.5f;
+	draw();
 	getFPS();
 
 
 	glutSwapBuffers();
 }
-void processMousePassiveMotion(int x,int y)
+
+void redraw_little()
 {
-/*	static int time, timebase = 0;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	glPushMatrix();
+	glRotatef(-90, 1, 0, 0);
+
+	glTranslatef(-1.0f, 0.0f, -1.0f);
+	glScalef(2.0f, 0.5f, 2.5f);
+	ShowMap_Little();
+	glPopMatrix();
+	drawPos();
+	glutSwapBuffers();
+
+}
+
+void create_subwindow()
+{
+	if (!bShow){
+		subwindowHandle = glutCreateSubWindow(windowHandle, 0, 0, 200, 100);
+		glutDisplayFunc(redraw_little);
+		glutIdleFunc(idle);
+		bShow = !bShow;
+	}
+	else{
+		glutDestroyWindow(subwindowHandle);
+		bShow = !bShow;
+	}
+}
+
+void processMousePassiveMotion(int x, int y)
+{
+	/*	static int time, timebase = 0;
 	double direction = 1.0;
 	//time=*/
-	mouseX = x;	
+	mouseX = x;
 	mouseY = y;
 }
+
+void processMenuEvents(int option) {
+	switch (option) {
+	case MAP:
+		if (tips_count > 0){
+			create_subwindow();
+			tips_count--;
+		}
+		else
+			;
+		break;
+	case GRAPHYICS:
+		printf("hehe\n"); break;
+	case CONTROL:
+		printf("hehehe\n"); break;
+	case HELP:
+		printf("cao\n"); break;
+	}
+}
+
+void createGLUTMenus() {
+
+	int menu;
+	menu = glutCreateMenu(processMenuEvents);
+	glutAddMenuEntry("TIPS/HIDE", MAP);
+	glutAddMenuEntry("GRAPHYICS", GRAPHYICS);
+	glutAddMenuEntry("CONTROL", CONTROL);
+	glutAddMenuEntry("HELP", HELP);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+}
+
 int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
-	int windowHandle = glutCreateWindow("Simple GLUT App");
-	ShowCursor(FALSE);
+	ShowCursor(CURSOR);
+	windowHandle = glutCreateWindow("Simple GLUT App");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
 	glutIdleFunc(idle);
 	glutPassiveMotionFunc(processMousePassiveMotion);
+	createGLUTMenus();
 	glutMainLoop();
 	return 0;
 }
