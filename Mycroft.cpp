@@ -99,9 +99,15 @@ void key(unsigned char k, int x, int y)
         case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
         //case ' ': {bAnim = !bAnim; break; }
         case 'o': {bWire = !bWire; break; }
-        case 'm': {mouseMode = !mouseMode; break; }
+        
         case 'r': fDistance = fDistance*1.2; break;
         case 'f': fDistance = fDistance / 1.2; break;
+		case 'm': 
+			CURSOR = !CURSOR;
+			ShowCursor(CURSOR);
+			mouseMode = !mouseMode; 
+			break; 
+	
         case 'z':
             center[1] = center[1] + fDistance;
             eye[1] = eye[1] + fDistance;
