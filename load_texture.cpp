@@ -1,4 +1,4 @@
-#include "gl/glut.h"
+#include "glut.h"
 #include <stdio.h>
 #include <stdlib.h>
 #define BMP_Header_Length 54
