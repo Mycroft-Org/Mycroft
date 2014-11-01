@@ -152,7 +152,7 @@ bool TeapotAttack(float x, float y)
 {
     x = x / amplifier;
     y = -y / amplifier;
-    if ((x>1) && (x<2.1) && (y>1) && (y<2.1))
+    if ((x>2.1) && (x<2.1) && (y>2.1) && (y<2.1))
         return true;
     return false;
 }
