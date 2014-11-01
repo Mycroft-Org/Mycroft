@@ -37,6 +37,7 @@ int mouseX = 0, mouseY = 0;
 void DrawWall();
 void DrawTeapot();
 bool WallBlock(float x, float y);
+bool TeapotAttack(float x, float y);
 
 void updateView(int width, int height)
 {
@@ -122,6 +123,11 @@ void key(unsigned char k, int x, int y)
 		    center[0] = center[0] + fDistance*cos(lrRotate);
 		    center[2] = center[2] + fDistance*sin(lrRotate);
         }
+		if (TeapotAttack(eye0,eye2))
+		{
+			eye[0] -= 5*fDistance*cos(lrRotate);
+			eye[2] -= 5*fDistance*sin(lrRotate);
+		}
 		break;
 	case 's':
 		eye0 = eye[0] - fDistance*cos(lrRotate);

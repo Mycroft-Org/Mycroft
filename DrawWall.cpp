@@ -129,9 +129,18 @@ bool WallBlock(float x, float y)
     return false;
 }
 
+bool TeapotAttack(float x, float y)
+{
+    x = x / amplifier;
+    y = - y / amplifier;
+	if ((x>1)&&(x<2.1)&&(y>1)&&(y<2.1))
+		return true;
+    return false;
+}
+
 void DrawTeapot(){
 	glPushMatrix();
-	glTranslatef(0, 0, 0);
+	glTranslatef(20, 20, 0);
 	glRotatef(90, 1, 0, 0);
 	glScalef(3,3,3);
 	glutSolidTeapot(1);
