@@ -176,10 +176,10 @@ void drawPos()
 
 void getFPS()
 {
+	GLfloat White[] = { 1.0, 1.0, 1.0, 1.0 };
+	
 	static int frame = 0, time, timebase = 0;
 	static char buffer[256];
-	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	glColor3fv(white);
 	char mode[64];
 	strcpy_s(mode, "naive");
 
@@ -198,10 +198,12 @@ void getFPS()
 	glPushMatrix();
 	glLoadIdentity();
 	glOrtho(0, 480, 0, 480, -1, 1);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
 	glRasterPos2f(10, 10);
+
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
@@ -289,6 +291,7 @@ void redraw()
 	glEnable(GL_LIGHTING);
 	
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
 	GLfloat light_pos[] = { 0, 0, 10, 1 };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
@@ -298,6 +301,7 @@ void redraw()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texGround);
 	glBegin(GL_QUADS);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
 	glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);
 	glTexCoord2f(0.0f, 5.0f); glVertex3f(100.0f, 0.0f, 0.0f);
 	glTexCoord2f(5.0f, 5.0f); glVertex3f(100.0f, 0.0f, -80.0f);
@@ -305,7 +309,7 @@ void redraw()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_2D);
+	/*glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texwall);
 	for (int i = 0; i < 19; i++) {
 
@@ -357,7 +361,7 @@ void redraw()
 		glTexCoord2f(1.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2]-0.1f);
 		glEnd();
 	}
-	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);*/
 
 	glRotatef(fRotate, 0, 1.0f, 0);
 	if (bAnim) fRotate += 0.5f;

@@ -60,7 +60,9 @@ GLfloat no_shininess[] = { 0.0 };
 GLfloat low_shininess[] = { 5.0 };
 GLfloat high_shininess[] = { 100.0 };
 GLfloat mat_emission[] = { 0.3, 0.2, 0.2, 0.0 };
-GLfloat wall_color[] = { 0, 1.0, 1.0, 1.0 };
+GLfloat wall_color[] = { 0.1, 0.2, 0.2, 1.0 };
+GLfloat teapot_color[] = { 0.2, 0.2, 0.2, 1.0 };
+
 void DrawWall()
 {
     float center_x, center_y, center_z;
@@ -70,8 +72,9 @@ void DrawWall()
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
     glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
-    glColorMaterial(GL_FRONT, GL_AMBIENT);
-    glEnable(GL_COLOR_MATERIAL);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, wall_color);
+  //  glColorMaterial(GL_FRONT, GL_AMBIENT);
+  //  glEnable(GL_COLOR_MATERIAL);
 
     // Row Walls
     center_z = wall_height / 2;
@@ -82,7 +85,7 @@ void DrawWall()
         center_y = (wall_row[i][0]);
         scale_x = wall_row[i][2] - wall_row[i][1];
         glPushMatrix();
-        glColor3fv(wall_color);
+     //   glColor3fv(wall_color);
         glScalef(amplifier, amplifier, amplifier);
         glTranslatef(center_x, center_y, center_z);
         glScalef(scale_x, scale_y, scale_z);
@@ -105,7 +108,7 @@ void DrawWall()
         glutSolidCube(1.0);
         glPopMatrix();
     }
-    glDisable(GL_COLOR_MATERIAL);
+  //  glDisable(GL_COLOR_MATERIAL);
     glPopMatrix();
 
 }
@@ -158,10 +161,12 @@ bool TeapotAttack(float x, float y)
 
 void DrawTeapot(){
     glPushMatrix();
+	glMaterialfv(GL_FRONT, GL_AMBIENT, teapot_color);
    // glTranslatef(20, 15 ,1);
     glTranslatef(20, 20,0);
     glRotatef(90, 1, 0, 0);
     glScalef(3, 3, 3);
     glutSolidTeapot(1);
     glPopMatrix();
+
 }
