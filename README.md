@@ -5,6 +5,7 @@ Final Project for Computer Graphics Course
 
 ## Simple HELP
 - Mouse:Change view
+- RightClick:open menu
 - W:Move forward
 - S:Move backward
 - Z:Move upward
@@ -12,3 +13,4 @@ Final Project for Computer Graphics Course
 - R:Accelerate
 - F:Decelerate
 - M:Change mouse mode
+- Space:Show/Hide mouse
