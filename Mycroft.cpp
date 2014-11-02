@@ -39,11 +39,12 @@ bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
 bool bShow = false;
+bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
 GLuint texGround,texwall;
 
-int windowHandle, subwindowHandle;
+int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0;
 int wWidth = 0;
 int mouseX = 0, mouseY = 0;
@@ -53,8 +54,9 @@ GLuint load_texture(const char* file_name);
 void ShowMap_Little();
 void DrawWall();
 void DrawTeapot();
-bool WallBlock(float x, float y);
+bool WallBlock(float x, float y, float z);
 bool TeapotAttack(float x, float y);
+void redraw_pointer();
 
 void updateView(int width, int height)
 {
@@ -133,7 +135,7 @@ void key(unsigned char k, int x, int y)
         case 'w':
             eye0 = eye[0] + fDistance*cos(lrRotate);
             eye2 = eye[2] + fDistance*sin(lrRotate);
-            if (!WallBlock(eye0, eye2)) {
+            if (!WallBlock(eye0, eye2, eye[1])) {
                 eye[0] = eye0;
                 eye[2] = eye2;
                 center[0] = center[0] + fDistance*cos(lrRotate);
@@ -147,7 +149,7 @@ void key(unsigned char k, int x, int y)
         case 's':
             eye0 = eye[0] - fDistance*cos(lrRotate);
             eye2 = eye[2] - fDistance*sin(lrRotate);
-            if (!WallBlock(eye0, eye2)) {
+            if (!WallBlock(eye0, eye2, eye[1])) {
                 eye[0] = eye0;
                 eye[2] = eye2;
                 center[0] = center[0] - fDistance*cos(lrRotate);
@@ -374,6 +376,8 @@ void redraw()
 	glutSwapBuffers();
 	/*glRotatef(fRotate, 0, 1.0f, 0);
 	if (bAnim) fRotate += 0.5f;*/
+
+	//redraw_pointer();
 }
 
 void redraw_little()
@@ -389,7 +393,22 @@ void redraw_little()
 	glPopMatrix();
 	drawPos();
 	glutSwapBuffers();
+}
 
+void redraw_pointer(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	//GLUquadricObj *Qobj;
+    //Qobj=gluNewQuadric(); 
+	glPushMatrix();
+		glRotatef(10,0,0,1);
+		glRotatef(0,0,1,0);
+		glScalef(0.1,1,0.1);
+		//gluCylinder(Qobj, 0.6, 0.6, 0.4, 10, 1);
+		glutWireCube(1.0);
+	glPopMatrix();
+	glutSwapBuffers();
 }
 
 void create_subwindow()
@@ -399,11 +418,14 @@ void create_subwindow()
 		glutDisplayFunc(redraw_little);
 		glutIdleFunc(idle);
 		bShow = !bShow;
+
+		subwindowHandle2 = glutCreateSubWindow(windowHandle, 200, 0, 200, 100);
+		glutDisplayFunc(redraw_pointer);
 	}
-	else{
+	/*else{
 		glutDestroyWindow(subwindowHandle);
 		bShow = !bShow;
-	}
+	}*/
 }
 
 void processMousePassiveMotion(int x, int y)
