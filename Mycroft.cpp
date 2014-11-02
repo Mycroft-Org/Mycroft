@@ -186,8 +186,8 @@ void getFPS()
 	frame++;
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase > 1000) {
-		sprintf_s(buffer, "FPS:%4.2f %s",
-			frame*1000.0 / (time - timebase), mode);
+		sprintf_s(buffer, "FPS:%4.2f %s  Speed:%.2f",
+			frame*1000.0 / (time - timebase), mode,fDistance);
 		timebase = time;
 		frame = 0;
 	}
