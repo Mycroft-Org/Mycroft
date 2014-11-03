@@ -1,4 +1,5 @@
 #include "glut.h"
+#include <stdio.h>
 float wall_row[][3] = {
 	{ 0, 1, 10 },
 	{ 1, 1, 2 },
@@ -136,7 +137,7 @@ bool WallBlock(float x, float y, float z)
 {
     x = x / amplifier;
     y = -y / amplifier;
-	if (z>wall_height)
+	if (z>15)
 		return false;
     // Row Walls
     for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
