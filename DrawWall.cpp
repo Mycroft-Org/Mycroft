@@ -132,10 +132,12 @@ void ShowMap_Little()
     }
 }
 
-bool WallBlock(float x, float y)
+bool WallBlock(float x, float y, float z)
 {
     x = x / amplifier;
     y = -y / amplifier;
+	if (z>wall_height)
+		return false;
     // Row Walls
     for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
         if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_width / 2 && y <= wall_row[i][0] + wall_width / 2)
