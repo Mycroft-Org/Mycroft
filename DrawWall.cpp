@@ -137,7 +137,7 @@ bool WallBlock(float x, float y, float z)
 {
     x = x / amplifier;
     y = -y / amplifier;
-	if (z>15)
+	if (z>wall_height+10)
 		return false;
     // Row Walls
     for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
