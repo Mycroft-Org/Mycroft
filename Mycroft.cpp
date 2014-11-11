@@ -334,6 +334,46 @@ void textureWall()
 	}
 	glDisable(GL_TEXTURE_2D);
 }
+void draw_solid_circle(float x, float y, float radius)
+{
+	int count;
+	int sections = 200;
+
+	GLfloat TWOPI = 2.0f * 3.14159f;
+
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(x, y,0);
+
+	for (count = 0; count <= sections; count++)
+	{
+		glVertex2f(x + radius*cos(count*TWOPI / sections), y + radius*sin(count*TWOPI / sections));
+	}
+	glEnd();
+}
+void drawCompass(){
+	GLfloat White[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat Black[] = { 0.0, 0.0, 0.0, 1.0 };
+	int n = 360;
+	float R = 50, r=10;
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, 480*wWidth/wHeight, 0, 480, -1000, 1000);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glMaterialfv(GL_FRONT, GL_AMBIENT, Black);
+	draw_solid_circle(R+15, 100, R);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
+	draw_solid_circle(65 + cos(-lrRotate)*(R - r - 5), 100 + sin(-lrRotate)*(R - r - 5), r);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+	
+}
 void redraw()
 {
 	if (mouseMode == true) mouseRotate_V2();
@@ -372,6 +412,7 @@ void redraw()
 	textureGround();
 	textureWall();
 	draw();
+	drawCompass();
 	getFPS();
 	glutSwapBuffers();
 	/*glRotatef(fRotate, 0, 1.0f, 0);
@@ -395,21 +436,7 @@ void redraw_little()
 	glutSwapBuffers();
 }
 
-void redraw_pointer(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
 
-	//GLUquadricObj *Qobj;
-    //Qobj=gluNewQuadric(); 
-	glPushMatrix();
-		glRotatef(10,0,0,1);
-		glRotatef(0,0,1,0);
-		glScalef(0.1,1,0.1);
-		//gluCylinder(Qobj, 0.6, 0.6, 0.4, 10, 1);
-		glutWireCube(1.0);
-	glPopMatrix();
-	glutSwapBuffers();
-}
 
 void create_subwindow()
 {
@@ -418,9 +445,6 @@ void create_subwindow()
 		glutDisplayFunc(redraw_little);
 		glutIdleFunc(idle);
 		bShow = !bShow;
-
-		subwindowHandle2 = glutCreateSubWindow(windowHandle, 200, 0, 200, 100);
-		glutDisplayFunc(redraw_pointer);
 	}
 	/*else{
 		glutDestroyWindow(subwindowHandle);
