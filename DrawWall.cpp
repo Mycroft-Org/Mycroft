@@ -66,110 +66,110 @@ GLfloat teapot_color[] = { 0.2, 0.2, 0.2, 1.0 };
 
 void DrawWall()
 {
-    float center_x, center_y, center_z;
-    float scale_x, scale_y, scale_z;
-    glPushMatrix();
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
-    glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+	float center_x, center_y, center_z;
+	float scale_x, scale_y, scale_z;
+	glPushMatrix();
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, wall_color);
-  //  glColorMaterial(GL_FRONT, GL_AMBIENT);
-  //  glEnable(GL_COLOR_MATERIAL);
+	//  glColorMaterial(GL_FRONT, GL_AMBIENT);
+	//  glEnable(GL_COLOR_MATERIAL);
 
-    // Row Walls
-    center_z = wall_height / 2;
-    scale_y = wall_width;
-    scale_z = wall_height;
-    for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
-        center_x = (wall_row[i][1] + wall_row[i][2]) / 2;
-        center_y = (wall_row[i][0]);
-        scale_x = wall_row[i][2] - wall_row[i][1];
-        glPushMatrix();
-     //   glColor3fv(wall_color);
-        glScalef(amplifier, amplifier, amplifier);
-        glTranslatef(center_x, center_y, center_z);
-        glScalef(scale_x, scale_y, scale_z);
-        glutSolidCube(1.0);
-        glPopMatrix();
-    }
+	// Row Walls
+	center_z = wall_height / 2;
+	scale_y = wall_width;
+	scale_z = wall_height;
+	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
+		center_x = (wall_row[i][1] + wall_row[i][2]) / 2;
+		center_y = (wall_row[i][0]);
+		scale_x = wall_row[i][2] - wall_row[i][1];
+		glPushMatrix();
+		//   glColor3fv(wall_color);
+		glScalef(amplifier, amplifier, amplifier);
+		glTranslatef(center_x, center_y, center_z);
+		glScalef(scale_x, scale_y, scale_z);
+		glutSolidCube(1.0);
+		glPopMatrix();
+	}
 
-    // Column Walls
-    center_z = wall_height / 2;
-    scale_x = wall_width;
-    scale_z = wall_height;
-    for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
-        center_y = (wall_col[i][1] + wall_col[i][2]) / 2;
-        center_x = (wall_col[i][0]);
-        scale_y = wall_col[i][2] - wall_col[i][1];
-        glPushMatrix();
-        glScalef(amplifier, amplifier, amplifier);
-        glTranslatef(center_x, center_y, center_z);
-        glScalef(scale_x, scale_y, scale_z);
-        glutSolidCube(1.0);
-        glPopMatrix();
-    }
-  //  glDisable(GL_COLOR_MATERIAL);
-    glPopMatrix();
+	// Column Walls
+	center_z = wall_height / 2;
+	scale_x = wall_width;
+	scale_z = wall_height;
+	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
+		center_y = (wall_col[i][1] + wall_col[i][2]) / 2;
+		center_x = (wall_col[i][0]);
+		scale_y = wall_col[i][2] - wall_col[i][1];
+		glPushMatrix();
+		glScalef(amplifier, amplifier, amplifier);
+		glTranslatef(center_x, center_y, center_z);
+		glScalef(scale_x, scale_y, scale_z);
+		glutSolidCube(1.0);
+		glPopMatrix();
+	}
+	//  glDisable(GL_COLOR_MATERIAL);
+	glPopMatrix();
 
 }
 
 void ShowMap_Little()
 {
-    glColor3f(1.0f, 1.0f, 0.0f);
-    GLfloat curSizeLine = 3;
-    glLineWidth(curSizeLine);
-    for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
-        glBegin(GL_LINES);
-        glVertex3f(wall_row[i][1] / 10, 0.0f, wall_row[i][0] / 10);
-        glVertex3f(wall_row[i][2] / 10, 0.0f, wall_row[i][0] / 10);
-        glEnd();
-    }
-    for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
-        glBegin(GL_LINES);
-        glVertex3f(wall_col[i][0] / 10, 0.0f, wall_col[i][1] / 10);
-        glVertex3f(wall_col[i][0] / 10, 0.0f, wall_col[i][2] / 10);
-        glEnd();
-    }
+	glColor3f(1.0f, 1.0f, 0.0f);
+	GLfloat curSizeLine = 3;
+	glLineWidth(curSizeLine);
+	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
+		glBegin(GL_LINES);
+		glVertex3f(wall_row[i][1] / 10, 0.0f, wall_row[i][0] / 10);
+		glVertex3f(wall_row[i][2] / 10, 0.0f, wall_row[i][0] / 10);
+		glEnd();
+	}
+	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
+		glBegin(GL_LINES);
+		glVertex3f(wall_col[i][0] / 10, 0.0f, wall_col[i][1] / 10);
+		glVertex3f(wall_col[i][0] / 10, 0.0f, wall_col[i][2] / 10);
+		glEnd();
+	}
 }
 
 bool WallBlock(float x, float y, float z)
 {
-    x = x / amplifier;
-    y = -y / amplifier;
-	if (z>wall_height+10)
+	x = x / amplifier;
+	y = -y / amplifier;
+	if (z>wall_height + 10)
 		return false;
-    // Row Walls
-    for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
-        if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_width / 2 && y <= wall_row[i][0] + wall_width / 2)
-            return true;
-    }
+	// Row Walls
+	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
+		if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_width / 2 && y <= wall_row[i][0] + wall_width / 2)
+			return true;
+	}
 
-    // Column Walls
-    for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
-        if (y >= wall_col[i][1] && y <= wall_col[i][2] && x >= wall_col[i][0] - wall_width / 2 && x <= wall_col[i][0] + wall_width / 2)
-            return true;
-    }
-    return false;
+	// Column Walls
+	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
+		if (y >= wall_col[i][1] && y <= wall_col[i][2] && x >= wall_col[i][0] - wall_width / 2 && x <= wall_col[i][0] + wall_width / 2)
+			return true;
+	}
+	return false;
 }
 
 bool TeapotAttack(float x, float y)
 {
-    x = x / amplifier;
-    y = -y / amplifier;
-    if ((x>2.1) && (x<2.1) && (y>2.1) && (y<2.1))
-        return true;
-    return false;
+	x = x / amplifier;
+	y = -y / amplifier;
+	if ((x>2.1) && (x<2.1) && (y>2.1) && (y<2.1))
+		return true;
+	return false;
 }
 
 void DrawTeapot(){
-    glPushMatrix();
+	glPushMatrix();
 	glMaterialfv(GL_FRONT, GL_AMBIENT, teapot_color);
-   // glTranslatef(20, 15 ,1);
-    glTranslatef(20, 20,0);
-    glRotatef(90, 1, 0, 0);
-    glScalef(3, 3, 3);
-    glutSolidTeapot(1);
-    glPopMatrix();
+	// glTranslatef(20, 15 ,1);
+	glTranslatef(20, 20, 0);
+	glRotatef(90, 1, 0, 0);
+	glScalef(3, 3, 3);
+	glutSolidTeapot(1);
+	glPopMatrix();
 
 }

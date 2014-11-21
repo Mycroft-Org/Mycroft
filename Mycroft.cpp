@@ -3,6 +3,14 @@
 #include <string.h>
 #include <math.h>
 #include <windows.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include<sstream>   
+
+
+using  namespace std;
 #include "glut.h" 
 /*Simple HELP
 A:Turn left
@@ -15,10 +23,13 @@ C:Move downward
 
 #define MAP 1
 #define GRAPHYICS 2
-#define CONTROL 3
+#define COPY 3
 #define HELP 4
 #define MAP_ON 5
 #define MAP_CLOSE 6
+#define WindowHeight 600
+#define  WindowWidth 800
+
 extern float wall_row[][3];
 extern float wall_col[][3];
 const float Pi = 3.14159265359;
@@ -42,7 +53,7 @@ bool bShow = false;
 bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
-GLuint texGround,texwall;
+GLuint texGround, texwall;
 
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0;
@@ -98,65 +109,65 @@ float center[] = { 0, 5, 0 };
 void key(unsigned char k, int x, int y)
 {
 	float eye0, eye2;
-    switch (k) {
-        case 27:
-        case 'q': {exit(0); break; }
-        case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
-        //case ' ': {bAnim = !bAnim; break; }
-        case 'o': {bWire = !bWire; break; }
-		case 't': wallTexture = !wallTexture;
-        case 'r': fDistance = fDistance*1.2; break;
-        case 'f': fDistance = fDistance / 1.2; break;
-		case 'm': 
-			CURSOR = !CURSOR;
-			ShowCursor(CURSOR);
-			mouseMode = !mouseMode; 
-			break; 
-	
-        case 'z':
-            center[1] = center[1] + fDistance;
-            eye[1] = eye[1] + fDistance;
-            break;
-        case 'c':
-            center[1] = center[1] - fDistance;
-            eye[1] = eye[1] - fDistance;
-            break;
-        case 'a':
-            lrRotate = lrRotate - rotateEPS;
-            center[0] = eye[0] + D*cos(lrRotate);
-            center[2] = eye[2] + D*sin(lrRotate);
-            break;
-        case 'd':
-            lrRotate = lrRotate + rotateEPS;
-            center[0] = eye[0] + D*cos(lrRotate);
-            center[2] = eye[2] + D*sin(lrRotate);
-            break;
+	switch (k) {
+	case 27:
+	case 'q': {exit(0); break; }
+	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
+		//case ' ': {bAnim = !bAnim; break; }
+	case 'o': {bWire = !bWire; break; }
+	case 't': wallTexture = !wallTexture;
+	case 'r': fDistance = fDistance*1.2; break;
+	case 'f': fDistance = fDistance / 1.2; break;
+	case 'm':
+		CURSOR = !CURSOR;
+		ShowCursor(CURSOR);
+		mouseMode = !mouseMode;
+		break;
 
-        case 'w':
-            eye0 = eye[0] + fDistance*cos(lrRotate);
-            eye2 = eye[2] + fDistance*sin(lrRotate);
-            if (!WallBlock(eye0, eye2, eye[1])) {
-                eye[0] = eye0;
-                eye[2] = eye2;
-                center[0] = center[0] + fDistance*cos(lrRotate);
-                center[2] = center[2] + fDistance*sin(lrRotate);
-            }
-            if (TeapotAttack(eye0, eye2)) {
-                eye[0] -= 5 * fDistance*cos(lrRotate);
-                eye[2] -= 5 * fDistance*sin(lrRotate);
-            }
-            break;
-        case 's':
-            eye0 = eye[0] - fDistance*cos(lrRotate);
-            eye2 = eye[2] - fDistance*sin(lrRotate);
-            if (!WallBlock(eye0, eye2, eye[1])) {
-                eye[0] = eye0;
-                eye[2] = eye2;
-                center[0] = center[0] - fDistance*cos(lrRotate);
-                center[2] = center[2] - fDistance*sin(lrRotate);
-            }
-            break;
-    }
+	case 'z':
+		center[1] = center[1] + fDistance;
+		eye[1] = eye[1] + fDistance;
+		break;
+	case 'c':
+		center[1] = center[1] - fDistance;
+		eye[1] = eye[1] - fDistance;
+		break;
+	case 'a':
+		lrRotate = lrRotate - rotateEPS;
+		center[0] = eye[0] + D*cos(lrRotate);
+		center[2] = eye[2] + D*sin(lrRotate);
+		break;
+	case 'd':
+		lrRotate = lrRotate + rotateEPS;
+		center[0] = eye[0] + D*cos(lrRotate);
+		center[2] = eye[2] + D*sin(lrRotate);
+		break;
+
+	case 'w':
+		eye0 = eye[0] + fDistance*cos(lrRotate);
+		eye2 = eye[2] + fDistance*sin(lrRotate);
+		if (!WallBlock(eye0, eye2, eye[1])) {
+			eye[0] = eye0;
+			eye[2] = eye2;
+			center[0] = center[0] + fDistance*cos(lrRotate);
+			center[2] = center[2] + fDistance*sin(lrRotate);
+		}
+		if (TeapotAttack(eye0, eye2)) {
+			eye[0] -= 5 * fDistance*cos(lrRotate);
+			eye[2] -= 5 * fDistance*sin(lrRotate);
+		}
+		break;
+	case 's':
+		eye0 = eye[0] - fDistance*cos(lrRotate);
+		eye2 = eye[2] - fDistance*sin(lrRotate);
+		if (!WallBlock(eye0, eye2, eye[1])) {
+			eye[0] = eye0;
+			eye[2] = eye2;
+			center[0] = center[0] - fDistance*cos(lrRotate);
+			center[2] = center[2] - fDistance*sin(lrRotate);
+		}
+		break;
+	}
 }
 void draw()
 {
@@ -176,10 +187,11 @@ void drawPos()
 	glEnd();
 }
 
+
 void getFPS()
 {
 	GLfloat White[] = { 1.0, 1.0, 1.0, 1.0 };
-	
+
 	static int frame = 0, time, timebase = 0;
 	static char buffer[256];
 	char mode[64];
@@ -189,7 +201,7 @@ void getFPS()
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase > 1000) {
 		sprintf_s(buffer, "FPS:%4.2f %s  Speed:%.2f",
-			frame*1000.0 / (time - timebase), mode,fDistance);
+			frame*1000.0 / (time - timebase), mode, fDistance);
 		timebase = time;
 		frame = 0;
 	}
@@ -342,7 +354,7 @@ void draw_solid_circle(float x, float y, float radius)
 	GLfloat TWOPI = 2.0f * 3.14159f;
 
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(x, y,0);
+	glVertex3f(x, y, 0);
 
 	for (count = 0; count <= sections; count++)
 	{
@@ -354,17 +366,17 @@ void drawCompass(){
 	GLfloat White[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat Black[] = { 0.0, 0.0, 0.0, 1.0 };
 	int n = 360;
-	float R = 50, r=10;
+	float R = 50, r = 10;
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glOrtho(0, 480*wWidth/wHeight, 0, 480, -1000, 1000);
+	glOrtho(0, 480 * wWidth / wHeight, 0, 480, -1000, 1000);
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
 	glMaterialfv(GL_FRONT, GL_AMBIENT, Black);
-	draw_solid_circle(R+15, 100, R);
+	draw_solid_circle(R + 15, 100, R);
 	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
 	draw_solid_circle(65 + cos(-lrRotate)*(R - r - 5), 100 + sin(-lrRotate)*(R - r - 5), r);
 	glMatrixMode(GL_PROJECTION);
@@ -372,7 +384,7 @@ void drawCompass(){
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
-	
+
 }
 void redraw()
 {
@@ -401,14 +413,14 @@ void redraw()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-	
+
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 
 	GLfloat light_pos[] = { 0, 0, 10, 1 };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glEnable(GL_LIGHT0);glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHT0); glEnable(GL_TEXTURE_2D);
 	textureGround();
 	textureWall();
 	draw();
@@ -447,8 +459,8 @@ void create_subwindow()
 		bShow = !bShow;
 	}
 	/*else{
-		glutDestroyWindow(subwindowHandle);
-		bShow = !bShow;
+	glutDestroyWindow(subwindowHandle);
+	bShow = !bShow;
 	}*/
 }
 
@@ -460,6 +472,47 @@ void processMousePassiveMotion(int x, int y)
 	mouseX = x;
 	mouseY = y;
 }
+
+void grab(void)
+{
+	FILE* pDummyFile;
+	FILE* pWritingFile;
+	GLubyte* pPixelData;
+	GLubyte BMP_Header[54];
+	GLint i, j;
+	GLint PixelDataLength;
+	
+	i = WindowWidth * 3; 
+	while (i % 4 != 0) 
+		++i;
+	PixelDataLength = i * WindowHeight;
+	pPixelData = (GLubyte*)malloc(PixelDataLength);
+	if (pPixelData == 0)
+		exit(0);
+	fopen_s(&pDummyFile,"1.bmp", "rb");
+	if (pDummyFile == 0)
+		exit(0);
+	fopen_s(&pWritingFile,"grab.bmp", "wb");
+	if (pWritingFile == 0)
+		exit(0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	glReadPixels(0, 0, WindowWidth, WindowHeight,
+		GL_BGR_EXT, GL_UNSIGNED_BYTE, pPixelData);
+	fread(BMP_Header, sizeof(BMP_Header), 1, pDummyFile);
+	fwrite(BMP_Header, sizeof(BMP_Header), 1, pWritingFile);
+	fseek(pWritingFile, 0x0012, SEEK_SET);
+	i = WindowWidth;
+	j = WindowHeight;
+	fwrite(&i, sizeof(i), 1, pWritingFile);
+	fwrite(&j, sizeof(j), 1, pWritingFile);
+	fseek(pWritingFile, 0, SEEK_END);
+	fwrite(pPixelData, PixelDataLength, 1, pWritingFile);
+	fclose(pDummyFile);
+	fclose(pWritingFile);
+	free(pPixelData);
+}
+
+
 
 void processMenuEvents(int option) {
 	switch (option) {
@@ -473,8 +526,9 @@ void processMenuEvents(int option) {
 		break;
 	case GRAPHYICS:
 		printf("hehe\n"); break;
-	case CONTROL:
-		printf("hehehe\n"); break;
+	case COPY:
+		grab();
+		break;
 	case HELP:
 		printf("cao\n"); break;
 	}
@@ -486,7 +540,7 @@ void createGLUTMenus() {
 	menu = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("TIPS/HIDE", MAP);
 	glutAddMenuEntry("GRAPHYICS", GRAPHYICS);
-	glutAddMenuEntry("CONTROL", CONTROL);
+	glutAddMenuEntry("COPY", COPY);
 	glutAddMenuEntry("HELP", HELP);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
@@ -500,7 +554,6 @@ int main(int argc, char *argv[])
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
 	texGround = load_texture("2.bmp");
-	printf("%d\n", texGround);
 	texwall = load_texture("1.bmp");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
