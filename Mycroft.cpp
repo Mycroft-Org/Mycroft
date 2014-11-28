@@ -13,6 +13,7 @@
 using  namespace std;
 //#include "glut.h" 
 #include<GL/glut.h>
+#include "Jumper.h"
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -70,6 +71,8 @@ void DrawTeapot();
 bool WallBlock(float x, float y, float z);
 bool TeapotAttack(float x, float y);
 void redraw_pointer();
+
+Jumper * pJumper;
 
 void updateView(int width, int height)
 {
@@ -170,7 +173,11 @@ void key(unsigned char k, int x, int y)
 			center[2] = center[2] - fDistance*sin(lrRotate);
 		}
 		break;
+    case ' ':
+        pJumper->jump();
+        break;
 	}
+
 }
 void draw()
 {
@@ -397,6 +404,8 @@ void drawCompass(){
 }
 void redraw()
 {
+   
+
 	if (mouseMode == true) mouseRotate_V2();
 	else mouseRotate_V1();
 
@@ -405,6 +414,7 @@ void redraw()
 	if (time - timebase <= 1000.0 / frameRate)  return;
 	else timebase = time;
 
+    pJumper->oneFrame();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -576,6 +586,7 @@ void createGLUTMenus() {
 
 int main(int argc, char *argv[])
 {
+    pJumper = new Jumper(eye[1], center[1]);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
