@@ -11,7 +11,8 @@
 
 
 using  namespace std;
-#include "glut.h" 
+//#include "glut.h" 
+#include<GL/glut.h>
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -50,6 +51,7 @@ bool bPersp = true;
 bool bAnim = false;
 bool bWire = false;
 bool bShow = false;
+bool bSpotLight = false;
 bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
@@ -115,7 +117,8 @@ void key(unsigned char k, int x, int y)
 	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
 		//case ' ': {bAnim = !bAnim; break; }
 	case 'o': {bWire = !bWire; break; }
-	case 't': wallTexture = !wallTexture;
+	case 'l': bSpotLight = !bSpotLight; break;
+	case 't': wallTexture = !wallTexture; break;
 	case 'r': fDistance = fDistance*1.2; break;
 	case 'f': fDistance = fDistance / 1.2; break;
 	case 'm':
@@ -207,6 +210,7 @@ void getFPS()
 	}
 
 	char *c;
+	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -226,6 +230,7 @@ void getFPS()
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
 }
 void mouseRotate_V1(){
 	float lrSpeed = 0, udRadius = 0;
@@ -278,10 +283,12 @@ void mouseRotate_V2(){
 }
 void textureGround()
 {
+	glEnable(GL_TEXTURE_2D);
 	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
 	glBindTexture(GL_TEXTURE_2D, texGround);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBegin(GL_QUADS);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
+	//glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
 	glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 0.0f);
 	glTexCoord2f(0.0f, 5.0f); glVertex3f(100.0f, 0.0f, 0.0f);
 	glTexCoord2f(5.0f, 5.0f); glVertex3f(100.0f, 0.0f, -80.0f);
@@ -292,6 +299,7 @@ void textureGround()
 void textureWall()
 {
 	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (!wallTexture)	glBindTexture(GL_TEXTURE_2D, texwall);
 	else	glBindTexture(GL_TEXTURE_2D, texGround);
 	for (int i = 0; i < 19; i++) {
@@ -367,6 +375,7 @@ void drawCompass(){
 	GLfloat Black[] = { 0.0, 0.0, 0.0, 1.0 };
 	int n = 360;
 	float R = 50, r = 10;
+//	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -384,7 +393,7 @@ void drawCompass(){
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
-
+//	glEnable(GL_LIGHTING);
 }
 void redraw()
 {
@@ -413,20 +422,39 @@ void redraw()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-
-	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-
-	GLfloat light_pos[] = { 0, 0, 10, 1 };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
+	GLfloat white[] = { 0.5, 0.5, 0.5, 1.0};
+	GLfloat BLUE[] = { 0.0, 0.0, 1.0, 1.0 };
+	GLfloat light_pos[] = { 0, 0, 1, 1 };
+	GLfloat light_dir[3];
+//	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);	
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
-	glEnable(GL_LIGHT0); glEnable(GL_TEXTURE_2D);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	
+	for (int i = 0; i < 3; i++)
+		light_dir[i] = center[i] - eye[i];
+	glLightfv(GL_LIGHT1, GL_POSITION, eye);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, BLUE);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, white);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_dir);
+	glLightf(GL_LIGHT1 ,GL_SPOT_EXPONENT, 2.);
+	glEnable(GL_LIGHT0); 
+	if (bSpotLight)
+		glEnable(GL_LIGHT1);
+	else
+		glDisable(GL_LIGHT1);
 	textureGround();
 	textureWall();
-	draw();
+	//draw();
 	drawCompass();
 	getFPS();
+	glTranslatef(light_pos[0], light_pos[1], light_pos[2]);
+	glutSolidSphere(0.1, 20, 20);
 	glutSwapBuffers();
+
 	/*glRotatef(fRotate, 0, 1.0f, 0);
 	if (bAnim) fRotate += 0.5f;*/
 

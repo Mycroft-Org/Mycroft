@@ -1,4 +1,5 @@
-#include "glut.h"
+//#include "glut.h"
+#include<GL/glut.h>
 #include <stdio.h>
 float wall_row[][3] = {
 	{ 0, 1, 10 },

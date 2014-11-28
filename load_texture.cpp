@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "glut.h"
+//#include "glut.h"
+#include<GL/glut.h>
 #define BMP_Header_Length 54
 
 int power_of_two(int n)
