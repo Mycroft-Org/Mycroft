@@ -108,7 +108,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-float eye[] = { 0, 5, 0+D };
+float eye[] = { 0, 5, 0+D ,1};
 float center[] = { 0, 5, 0 };
 
 void key(unsigned char k, int x, int y)
@@ -333,20 +333,23 @@ void redraw()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
-	GLfloat white[] = { 0.5, 0.5, 0.5, 1.0};
-	GLfloat BLUE[] = { 0.0, 0.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 0, 0, 1, 1 };
-	GLfloat light_dir[3];
+	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat dark[] = { 0.0, 0.0, 0.0, 1.0 };
+	GLfloat grey[] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat mid[] = { 0.5, 0.5, 0.5, 1.0 };
+	GLfloat blue[] = { 0.0, 0.0, 1.0, 1.0 };
+	GLfloat light_pos[] = { 0, 1, 1, 0 };
+	GLfloat light_dir[4] = { 0.0, 0.0, 0.0, 0.0 };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);	
-	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, mid);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);	
 	for (int i = 0; i < 3; i++)
 		light_dir[i] = center[i] - eye[i];
 	glLightfv(GL_LIGHT1, GL_POSITION, eye);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, BLUE);
+	glLightfv(GL_LIGHT1, GL_AMBIENT, blue);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, white);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, blue);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_dir);
 	glLightf(GL_LIGHT1 ,GL_SPOT_EXPONENT, 2.);
@@ -357,8 +360,10 @@ void redraw()
 	//draw();
 	drawCompass();
 	getFPS();
-	glTranslatef(light_pos[0], light_pos[1], light_pos[2]);
 	glutSolidSphere(0.1, 20, 20);
+	glTranslatef(light_pos[0]*2, light_pos[1]*2, light_pos[2]*2);
+	glutSolidSphere(0.1, 20, 20);
+	
 	glutSwapBuffers();
 
 	/*glRotatef(fRotate, 0, 1.0f, 0);
