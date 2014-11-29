@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <windows.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,6 +13,8 @@ using  namespace std;
 //#include "glut.h" 
 #include<GL/glut.h>
 #include "Jumper.h"
+#include "Move.h"
+#include "Mouse.h"
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -34,17 +35,16 @@ C:Move downward
 
 extern float wall_row[][3];
 extern float wall_col[][3];
+const float D = 3.0;
 const float Pi = 3.14159265359;
 float fTranslate;
 float fRotate;
 float fScale = 1.0f;
-float fDistance = 0.2f;
-float rotateEPS = 3.0*Pi / 180;
-float mouseRotateEPS = 0.04*Pi / 180;
+
 float lrRotate = -0.5*Pi;
 float udRotate = 0;
-float udRotateLim = 30 * Pi / 180;
-float D = 3.0;
+
+
 float frameRate = 60;
 
 bool mouseMode = true;
@@ -59,8 +59,7 @@ bool wallTexture = false;
 GLuint texGround, texwall;
 
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
-int wHeight = 0;
-int wWidth = 0;
+int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
 int tips_count = 6;
 
@@ -73,7 +72,8 @@ bool TeapotAttack(float x, float y);
 void redraw_pointer();
 
 Jumper * pJumper;
-
+Mover *pMover;
+Mouse *pMouse;
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -108,74 +108,28 @@ void idle()
 	glutPostRedisplay();
 }
 
-float eye[] = { 0, 5, 3 };
+float eye[] = { 0, 5, 0+D };
 float center[] = { 0, 5, 0 };
 
 void key(unsigned char k, int x, int y)
 {
-	float eye0, eye2;
 	switch (k) {
 	case 27:
-	case 'q': {exit(0); break; }
-	case 'p': {bPersp = !bPersp; updateView(wWidth, wHeight); break; }
-		//case ' ': {bAnim = !bAnim; break; }
-	case 'o': {bWire = !bWire; break; }
-	case 'l': bSpotLight = !bSpotLight; break;
+	case 'q': exit(0); break; 
+	case 'p': bPersp = !bPersp; updateView(wWidth, wHeight); break; 
+	case 'o': bWire = !bWire;             break; 
+	case 'l': bSpotLight = !bSpotLight;   break;
 	case 't': wallTexture = !wallTexture; break;
-	case 'r': fDistance = fDistance*1.2; break;
-	case 'f': fDistance = fDistance / 1.2; break;
-	case 'm':
-		CURSOR = !CURSOR;
-		ShowCursor(CURSOR);
-		mouseMode = !mouseMode;
-		break;
-
-	case 'z':
-		center[1] = center[1] + fDistance;
-		eye[1] = eye[1] + fDistance;
-		break;
-	case 'c':
-		center[1] = center[1] - fDistance;
-		eye[1] = eye[1] - fDistance;
-		break;
-	case 'a':
-		lrRotate = lrRotate - rotateEPS;
-		center[0] = eye[0] + D*cos(lrRotate);
-		center[2] = eye[2] + D*sin(lrRotate);
-		break;
-	case 'd':
-		lrRotate = lrRotate + rotateEPS;
-		center[0] = eye[0] + D*cos(lrRotate);
-		center[2] = eye[2] + D*sin(lrRotate);
-		break;
-
-	case 'w':
-		eye0 = eye[0] + fDistance*cos(lrRotate);
-		eye2 = eye[2] + fDistance*sin(lrRotate);
-		if (!WallBlock(eye0, eye2, eye[1])) {
-			eye[0] = eye0;
-			eye[2] = eye2;
-			center[0] = center[0] + fDistance*cos(lrRotate);
-			center[2] = center[2] + fDistance*sin(lrRotate);
-		}
-		if (TeapotAttack(eye0, eye2)) {
-			eye[0] -= 5 * fDistance*cos(lrRotate);
-			eye[2] -= 5 * fDistance*sin(lrRotate);
-		}
-		break;
-	case 's':
-		eye0 = eye[0] - fDistance*cos(lrRotate);
-		eye2 = eye[2] - fDistance*sin(lrRotate);
-		if (!WallBlock(eye0, eye2, eye[1])) {
-			eye[0] = eye0;
-			eye[2] = eye2;
-			center[0] = center[0] - fDistance*cos(lrRotate);
-			center[2] = center[2] - fDistance*sin(lrRotate);
-		}
-		break;
-    case ' ':
-        pJumper->jump();
-        break;
+	case 'm': CURSOR = !CURSOR;	ShowCursor(CURSOR);	mouseMode = !mouseMode;	break;
+	case 'r':pMover->speedUp();     break;
+	case 'f':pMover->speedDown();   break;
+	case 'z':pMover->goUp();		    break;
+	case 'c':pMover->goDown();		break;
+	case 'a':pMover->turnLeft();		break;
+	case 'd':pMover->turnRight();	break;
+	case 'w':pMover->zoomIn();		break;
+	case 's':pMover->zoomOut();		break;
+    case ' ':pJumper->jump();       break;
 	}
 
 }
@@ -211,7 +165,7 @@ void getFPS()
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase > 1000) {
 		sprintf_s(buffer, "FPS:%4.2f %s  Speed:%.2f",
-			frame*1000.0 / (time - timebase), mode, fDistance);
+			frame*1000.0 / (time - timebase), mode, pMover->getMoveSpeed());
 		timebase = time;
 		frame = 0;
 	}
@@ -228,7 +182,6 @@ void getFPS()
 	glPushMatrix();
 	glLoadIdentity();
 	glRasterPos2f(10, 10);
-
 	for (c = buffer; *c != '\0'; c++) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 	}
@@ -239,55 +192,8 @@ void getFPS()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 }
-void mouseRotate_V1(){
-	float lrSpeed = 0, udRadius = 0;
-	static int time, timebase = 0;
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase <= 4)  return;
-	else timebase = time;
-	if (mouseX < wWidth*0.45) lrSpeed = -3 * (wWidth*0.45 - mouseX) / (wWidth*0.45);
-	else if (mouseX > wWidth*0.55) lrSpeed = 3 * (-wWidth*0.55 + mouseX) / (wWidth*0.45);
-	else lrSpeed = 0;
-	lrRotate = lrRotate + lrSpeed*mouseRotateEPS;
-	center[0] = eye[0] + D*cos(lrRotate);
-	center[2] = eye[2] + D*sin(lrRotate);
-	if (mouseY < wHeight*0.40) udRadius = (+wHeight*0.40 - mouseY) / (wHeight*0.40);
-	else if (mouseY > wHeight*0.60) udRadius = (+wHeight*0.60 - mouseY) / (wHeight*0.40);
-	else udRadius = 0;
-	center[1] = eye[1] + D*sin(udRotateLim*udRadius);
-}
-void mouseRotate_V2(){
-	float lrSpeed = 0.1 * Pi / 180, udSpeed = -0.1 * Pi / 180;
-	static int time, timebase = 0;
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase <= 4)  return;
-	else timebase = time;
-	POINT p;
-	GetCursorPos(&p);
-	//printf("%ld %ld\n", p.x, p.y);
-	mouseX = p.x;
-	mouseY = p.y;
-	//	printf("%ld %ld\n", mouseX, mouseY);
-	//	printf("%d %.2lf %.2lf\n", mouseY, 1.0*wHeight / 2, wHeight*1.0 / 2);
-	if (fabs((mouseX - 1.0*wWidth / 2) / (wWidth))>0.0)
-	{
-		lrRotate = lrRotate + (mouseX - wWidth*1.0 / 2)*lrSpeed;
-		center[0] = eye[0] + D*cos(lrRotate);
-		center[2] = eye[2] + D*sin(lrRotate);
-	}
-	if (fabs((mouseY - 1.0*wHeight / 2) / (wHeight)) > 0.0)
-	{
-		udRotate = udRotate + (mouseY - wHeight*1.0 / 2)*udSpeed;
-		if (udRotate > udRotateLim) udRotate = udRotateLim;
-		if (udRotate < -udRotateLim) udRotate = -udRotateLim;
-		center[1] = eye[1] + D*sin(udRotate);
-	}
-	SetCursorPos(wWidth*1.0 / 2, wHeight*1.0 / 2);
-	//	GetCursorPos(&p);
-	//	printf("%ld %ld\n", p.x, p.y);
 
 
-}
 void textureGround()
 {
 	glEnable(GL_TEXTURE_2D);
@@ -382,7 +288,6 @@ void drawCompass(){
 	GLfloat Black[] = { 0.0, 0.0, 0.0, 1.0 };
 	int n = 360;
 	float R = 50, r = 10;
-//	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -400,19 +305,15 @@ void drawCompass(){
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
-//	glEnable(GL_LIGHTING);
 }
 void redraw()
-{
-   
-
-	if (mouseMode == true) mouseRotate_V2();
-	else mouseRotate_V1();
-
+{ 
 	static int time, timebase = 0;
+	mouseMode ? pMouse->mouseMove_V2() : pMouse->mouseMove_V1();
+
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase <= 1000.0 / frameRate)  return;
-	else timebase = time;
+		else timebase = time;
 
     pJumper->oneFrame();
 
@@ -436,26 +337,21 @@ void redraw()
 	GLfloat BLUE[] = { 0.0, 0.0, 1.0, 1.0 };
 	GLfloat light_pos[] = { 0, 0, 1, 1 };
 	GLfloat light_dir[3];
-//	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);	
 	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
-	
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);	
 	for (int i = 0; i < 3; i++)
 		light_dir[i] = center[i] - eye[i];
 	glLightfv(GL_LIGHT1, GL_POSITION, eye);
 	glLightfv(GL_LIGHT1, GL_AMBIENT, BLUE);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, white);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, white);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_dir);
 	glLightf(GL_LIGHT1 ,GL_SPOT_EXPONENT, 2.);
 	glEnable(GL_LIGHT0); 
-	if (bSpotLight)
-		glEnable(GL_LIGHT1);
-	else
-		glDisable(GL_LIGHT1);
+	bSpotLight ? glEnable(GL_LIGHT1) : glDisable(GL_LIGHT1);
 	textureGround();
 	textureWall();
 	//draw();
@@ -504,9 +400,6 @@ void create_subwindow()
 
 void processMousePassiveMotion(int x, int y)
 {
-	/*	static int time, timebase = 0;
-	double direction = 1.0;
-	//time=*/
 	mouseX = x;
 	mouseY = y;
 }
@@ -587,6 +480,8 @@ void createGLUTMenus() {
 int main(int argc, char *argv[])
 {
     pJumper = new Jumper(eye[1], center[1]);
+	pMover = new Mover(eye, center,lrRotate);
+	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
