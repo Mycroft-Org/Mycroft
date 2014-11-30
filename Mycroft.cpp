@@ -367,10 +367,11 @@ void redraw()
 	drawCompass();
 	getFPS();
 	//glutSolidSphere(0.1, 20, 20);
-	/*women1
-	glTranslatef(0, 3.0, 0);
-	glScalef(0.004, 0.004, 0.004);
-	glmDraw(pModel, GLM_SMOOTH);*/
+	/*glPushMatrix();
+		glTranslatef(100, 3.0, -75);
+		glScalef(0.004, 0.004, 0.004);
+		glmDraw(pWomen, GLM_SMOOTH);
+	glPopMatrix();*/
 
     pMonster->render();
 	glutSwapBuffers();
