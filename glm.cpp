@@ -17,7 +17,7 @@ coordinate generation (spheremap and planar projections) + more.
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "glm/glm.h"
+#include "glm.h"
 
 
 #define T(x) (model->triangles[(x)])
@@ -260,12 +260,11 @@ glmReadMTL(GLMmodel* model, char* name)
 	filename = (char*)malloc(sizeof(char)* (strlen(dir) + strlen(name) + 1));
 	strcpy_s(filename,sizeof(dir),dir);
 	int j;
-	for (j = 0; j < sizeof(name); j++)
+	for (j = 0; j < strlen(name); j++)
 	{
 		filename[j] = name[j];
 	}
-	filename[j] = name[j];
-	filename[j + 1] = '\0';
+	filename[j] = '\0';
 	free(dir);
 	fopen_s(&file,filename, "r");
 	if (!file) {
@@ -449,7 +448,7 @@ glmFirstPass(GLMmodel* model, FILE* file)
 	numvertices = numnormals = numtexcoords = numtriangles = 0;
 
 	while (fscanf_s(file, "%s", buf,128) != EOF) {
-		printf("%d\n",count++);
+	//	printf("%d\n",count++);
 		switch (buf[0]) {
 		case '#':               /* comment */
 			/* eat up rest of line */

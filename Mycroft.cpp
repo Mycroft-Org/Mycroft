@@ -15,6 +15,7 @@ using  namespace std;
 #include "Jumper.h"
 #include "Move.h"
 #include "Mouse.h"
+#include "glm.h"
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -57,7 +58,7 @@ bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
 GLuint texGround, texwall;
-
+GLMmodel *pWomen,*pEight;
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
@@ -361,16 +362,15 @@ void redraw()
 	//draw();
 	drawCompass();
 	getFPS();
-	glutSolidSphere(0.1, 20, 20);
-	glTranslatef(light_pos[0]*2, light_pos[1]*2, light_pos[2]*2);
-	glutSolidSphere(0.1, 20, 20);
-	
+	//glutSolidSphere(0.1, 20, 20);
+	/*women1
+	glTranslatef(0, 3.0, 0);
+	glScalef(0.004, 0.004, 0.004);
+	glmDraw(pModel, GLM_SMOOTH);*/
+	glTranslatef(0, 2, 0);
+	glScalef(0.05, 0.05, 0.05);
+	glmDraw(pEight, GLM_SMOOTH);
 	glutSwapBuffers();
-
-	/*glRotatef(fRotate, 0, 1.0f, 0);
-	if (bAnim) fRotate += 0.5f;*/
-
-	//redraw_pointer();
 }
 
 void redraw_little()
@@ -488,6 +488,8 @@ int main(int argc, char *argv[])
     pJumper = new Jumper(eye[1], center[1]);
 	pMover = new Mover(eye, center,lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
+	pEight = glmReadOBJ("eight.obj");
+	//pWomen = glmReadOBJ("women.obj");
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
