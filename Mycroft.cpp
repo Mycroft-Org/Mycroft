@@ -321,6 +321,7 @@ void redraw()
 		else timebase = time;
 
     pJumper->oneFrame();
+    pMonster->oneFrame();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -370,8 +371,7 @@ void redraw()
 	glTranslatef(0, 3.0, 0);
 	glScalef(0.004, 0.004, 0.004);
 	glmDraw(pModel, GLM_SMOOTH);*/
-	glTranslatef(0, 2, 0);
-	glScalef(0.05, 0.05, 0.05);
+
     pMonster->render();
 	glutSwapBuffers();
 }

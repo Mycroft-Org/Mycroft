@@ -52,7 +52,7 @@ float wall_col[][3] = {
 
 float wall_height = 1.0;
 float wall_width = 0.06;
-float amplifier = 10;
+const float amplifier = 10;//in monster, too
 GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
 GLfloat mat_grey_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
 GLfloat mat_red_ambient[] = { 0.0, 0.0, 1.0, 1.0 };
