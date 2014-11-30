@@ -25,7 +25,7 @@ void Jumper::oneFrame()
         if (eye + speed > land) {
             eye += speed;
             center += speed;
-            printf("%d\n");
+            //printf("%d\n");
         }
         else {
             move = false;

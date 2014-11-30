@@ -15,7 +15,8 @@ using  namespace std;
 #include "Jumper.h"
 #include "Move.h"
 #include "Mouse.h"
-#include "glm.h"
+//#include "glm.h"
+#include "Monster.h"
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -75,6 +76,8 @@ void redraw_pointer();
 Jumper * pJumper;
 Mover *pMover;
 Mouse *pMouse;
+Monster * pMonster;
+
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -369,7 +372,7 @@ void redraw()
 	glmDraw(pModel, GLM_SMOOTH);*/
 	glTranslatef(0, 2, 0);
 	glScalef(0.05, 0.05, 0.05);
-	glmDraw(pEight, GLM_SMOOTH);
+    pMonster->render();
 	glutSwapBuffers();
 }
 
@@ -488,7 +491,8 @@ int main(int argc, char *argv[])
     pJumper = new Jumper(eye[1], center[1]);
 	pMover = new Mover(eye, center,lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
-	pEight = glmReadOBJ("eight.obj");
+    pMonster = new Monster();
+	//pEight = glmReadOBJ();
 	//pWomen = glmReadOBJ("women.obj");
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
