@@ -589,14 +589,14 @@ void text_init(){
 	texwall[0] = load_texture("wall_0.bmp");
 	texwall[1] = load_texture("wall_1.bmp");
 	texwall[2] = load_texture("wall_2.bmp");
-	texSky = load_texture("sky_1.bmp");
+	texSky = load_texture("sky_2.bmp");
 }
 int main(int argc, char *argv[])
 {
     pJumper = new Jumper(eye[1], center[1]);
 	pMover = new Mover(eye, center,lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
-    pMonster = new Monster(eye);
+    pMonster = new Monster(eye,center);
 	pBullets = new Bullets(eye, center);
 	//pEight = glmReadOBJ();
 	//pWomen = glmReadOBJ("01.obj");

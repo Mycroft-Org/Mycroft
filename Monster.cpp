@@ -1,6 +1,6 @@
 #include "Monster.h"
 
-Monster::Monster(float* eye) :eye(eye)
+Monster::Monster(float* eye, float* center) :eye(eye), center(center)
 {
     model = glmReadOBJ("eight.obj");
     MonsterInfo mv[] = {
@@ -85,18 +85,22 @@ void Monster::conflict(float speed){
 			if (info.row_col&&!info.direction)
 			{
 				eye[0] = eye[0] - 0.25 - speed;
+				center[0] = center[0] - 0.25 - speed;
 			}
 			if (info.row_col&&info.direction)
 			{
 				eye[0] = eye[0] + 0.25 + speed;
+				center[0] = center[0] + 0.25 + speed;
 			}
 			if (!info.row_col&&!info.direction)
 			{
 				eye[2] = eye[2] - 0.25 - speed;
+				center[2] = center[2] - 0.25 - speed;
 			}
 			if (!info.row_col&&info.direction)
 			{
 				eye[2] = eye[2] + 0.25 + speed;
+				center[2] = center[2] + 0.25 + speed;
 			}
 
 		}

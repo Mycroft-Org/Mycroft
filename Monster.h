@@ -18,7 +18,7 @@ class Monster
 {
 public:
 	
-    Monster(float *eye);
+    Monster(float *eye,float *center);
     ~Monster();
     void render();
     void oneFrame();
@@ -29,6 +29,7 @@ private:
     GLMmodel * model;
     float position[2];
 	float *eye;
+	float *center;
     const float amplifier = 10;
     const float speed = 0.02;
     float height = 3;
