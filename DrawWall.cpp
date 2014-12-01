@@ -138,24 +138,24 @@ void ShowMap_Little()
 	}
 }
 
-bool WallBlock(float x, float y, float z)
+int WallBlock(float x, float y, float z)
 {
 	x = x / amplifier;
 	y = -y / amplifier;
 	if (z>wall_height + 10)
-		return false;
+		return 0;
 	// Row Walls
 	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
 		if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_width / 2 && y <= wall_row[i][0] + wall_width / 2)
-			return true;
+			return 1;
 	}
 
 	// Column Walls
 	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
 		if (y >= wall_col[i][1] && y <= wall_col[i][2] && x >= wall_col[i][0] - wall_width / 2 && x <= wall_col[i][0] + wall_width / 2)
-			return true;
+			return 2;
 	}
-	return false;
+	return 0;
 }
 
 bool TeapotAttack(float x, float y)

@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include<sstream>   
-
-
+#include <thread>
+#include<sstream>  
+#include <windows.h>
+#include <mutex> 
+//#include <afxwin.h>
+#pragma comment(lib,"winmm.lib")
 using  namespace std;
 //#include "glut.h" 
 #include<GL/glut.h>
@@ -64,6 +67,7 @@ int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
 int tips_count = 6;
+std::mutex g_mutex;
 
 GLuint load_texture(const char* file_name);
 void ShowMap_Little();
@@ -114,7 +118,8 @@ void idle()
 
 float eye[] = { 0, 5, 0+D ,1};
 float center[] = { 0, 5, 0 };
-
+DWORD WINAPI Dong(void *g);
+HANDLE bgm;
 void key(unsigned char k, int x, int y)
 {
 	switch (k) {
@@ -133,7 +138,7 @@ void key(unsigned char k, int x, int y)
 	case 'd':pMover->turnRight();	break;
 	case 'w':pMover->zoomIn();		break;
 	case 's':pMover->zoomOut();		break;
-    case ' ':pJumper->jump();       break;
+	case ' ': pJumper->jump();       break;
 	}
 
 }
@@ -311,6 +316,65 @@ void drawCompass(){
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
+
+DWORD WINAPI Music(void *g)
+{
+	while (1) 
+	{
+		PlaySound("G:\\love.wav", 0, SND_FILENAME | SND_SYNC);
+	}
+	return 0;
+}
+DWORD WINAPI Dong(void *g)
+{
+		PlaySound("G:\\dong.wav", 0, SND_FILENAME | SND_SYNC);
+	return 0;
+}
+
+
+float calc_dis(float x1, float y1, float x2, float y2){
+	float distance;
+	distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
+	return distance;
+}
+void conflict(Monster *pMonster, Mover *pMover){
+	float en_pos[5][3];
+	float *eye;
+	float distance;
+	int i=0;
+	eye = pMover->eye;
+	for (auto info : pMonster->monsterInfos){
+
+		en_pos[i][0] = info.now * 10;
+		en_pos[i][1] = 3;
+		en_pos[i][2] = -info.line * 10;
+		distance=calc_dis(en_pos[i][0],en_pos[i][2],eye[0],eye[2]);
+		if (distance < 3){
+			if (info.row_col&&!info.direction)
+			{
+				eye[0] = eye[0] - 0.2 - pMover->getMoveSpeed();
+				//SuspendThread(bgm);
+
+
+			}
+			if (info.row_col&&info.direction)
+			{
+				eye[0] = eye[0] + 0.2 + pMover->getMoveSpeed();
+			}
+			if (!info.row_col&&!info.direction)
+			{
+				eye[2] = eye[2] - 0.2 - pMover->getMoveSpeed();
+			}
+			if (!info.row_col&&info.direction)
+			{
+				eye[2] = eye[2] + 0.2 + pMover->getMoveSpeed();
+			}
+
+		}
+		i++;
+	}
+
+}
 void textureSky(){
 	glPushMatrix();
 	GLUquadricObj *qobject = gluNewQuadric();
@@ -347,7 +411,6 @@ void redraw()
 	else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
-
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -376,15 +439,15 @@ void redraw()
 	textureWall();
 	textureSky();
 	//draw();
+	//glmDraw(pWomen,GLM_FLAT);
 	drawCompass();
 	getFPS();
 	//glutSolidSphere(0.1, 20, 20);
-	/*glPushMatrix();
-		glTranslatef(100, 3.0, -75);
-		glScalef(0.004, 0.004, 0.004);
-		glmDraw(pWomen, GLM_SMOOTH);
-	glPopMatrix();*/
-
+	/*women1
+	glTranslatef(0, 3.0, 0);
+	glScalef(0.004, 0.004, 0.004);
+	glmDraw(pModel, GLM_SMOOTH);*/
+	conflict(pMonster, pMover);
     pMonster->render();
 	glutSwapBuffers();
 }
@@ -506,7 +569,8 @@ int main(int argc, char *argv[])
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
     pMonster = new Monster();
 	//pEight = glmReadOBJ();
-	//pWomen = glmReadOBJ("women.obj");
+	//pWomen = glmReadOBJ("01.obj");
+	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);

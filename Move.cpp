@@ -1,5 +1,5 @@
 #include "Move.h"
-bool WallBlock(float x, float y, float z);
+int WallBlock(float x, float y, float z);
 Mover::Mover(float * eye, float * center, float &lrRotate) :eye(eye), center(center), lrRotate(lrRotate){
 }
 
@@ -13,6 +13,13 @@ void Mover::zoomIn(){
 		center[0] = center[0] + moveSpeed*cos(lrRotate);
 		center[2] = center[2] + moveSpeed*sin(lrRotate);
 	}
+	else if (WallBlock(eye0, eye2, eye[1]) == 1){
+		eye[0] = eye0;
+	}
+	else if (WallBlock(eye0, eye2, eye[1] == 2)){
+		eye[2] = eye2;
+	}
+
 }
 
 void Mover::zoomOut(){
@@ -24,6 +31,12 @@ void Mover::zoomOut(){
 		eye[2] = eye2;
 		center[0] = center[0] - moveSpeed*cos(lrRotate);
 		center[2] = center[2] - moveSpeed*sin(lrRotate);
+	}
+	else if (WallBlock(eye0, eye2, eye[1]) == 1){
+		eye[0] = eye0;
+	}
+	else if (WallBlock(eye0, eye2, eye[1] == 2)){
+		eye[2] = eye2;
 	}
 }
 void Mover::turnLeft(){
