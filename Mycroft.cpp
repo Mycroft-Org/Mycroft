@@ -320,11 +320,15 @@ void redraw()
 	glmDraw(pModel, GLM_SMOOTH);*/
 	pMonster->conflict(speed);
 	pMonster->render();
-	glTranslatef(105, 0, -75);
+    pBullets->render();
+
+    glPushMatrix();
+    glTranslatef(105, 0, -75);
 	glRotated(90, 0, 1, 0);
 	glScalef(0.001, 0.001, 0.001);
 	glmDraw(pFlag, GLM_SMOOTH);
-    pBullets->render();
+    glPopMatrix();
+
 	glutSwapBuffers();
 }
 
