@@ -58,7 +58,7 @@ bool bSpotLight = false;
 bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
-GLuint texGround, texwall;
+GLuint texGround, texwall,texSky;
 GLMmodel *pWomen,*pEight;
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
@@ -87,7 +87,7 @@ void updateView(int width, int height)
 	float whRatio = (GLfloat)width / (GLfloat)height;
 
 	if (bPersp){
-		gluPerspective(30, whRatio, 0.1, 100);
+		gluPerspective(30, whRatio, 0.1, 300);
 	}
 	else
 		glOrtho(-2 * whRatio, 2 * whRatio, -2, 2, -100, 100);
@@ -311,6 +311,17 @@ void drawCompass(){
 	glPopMatrix();
 	glEnable(GL_DEPTH_TEST);
 }
+void textureSky(){
+	glPushMatrix();
+	GLUquadricObj *qobject = gluNewQuadric();
+	gluQuadricTexture(qobject, GL_TRUE);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texSky);
+	glTranslatef(50, 0, -40);
+	gluSphere(qobject, 70, 80, 80);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
 void redraw()
 { 
 	static int time, timebase = 0;
@@ -363,6 +374,7 @@ void redraw()
 	bSpotLight ? glEnable(GL_LIGHT1) : glDisable(GL_LIGHT1);
 	textureGround();
 	textureWall();
+	textureSky();
 	//draw();
 	drawCompass();
 	getFPS();
@@ -502,6 +514,7 @@ int main(int argc, char *argv[])
 	windowHandle = glutCreateWindow("Simple GLUT App");
 	texGround = load_texture("ground_1.bmp");
 	texwall = load_texture("wall_1.bmp");
+	texSky = load_texture("sky_1.bmp");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
