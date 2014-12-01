@@ -65,7 +65,7 @@ bool wallTexture = false;
 GLuint texGround[3];
 GLuint texwall[3];
 GLuint texSky;
-GLMmodel *pWomen,*pEight;
+GLMmodel *pWomen,*pEight,*pFlag;
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
@@ -418,16 +418,12 @@ void redraw()
 	textureWall();
 	textureSky();
 	//draw();
-	//glmDraw(pWomen,GLM_FLAT);
 	drawCompass();
 	getFPS();
-	//glutSolidSphere(0.1, 20, 20);
-	/*women1
-	glTranslatef(0, 3.0, 0);
-	glScalef(0.004, 0.004, 0.004);
-	glmDraw(pModel, GLM_SMOOTH);*/
-	pMonster->conflict(speed);
-    pMonster->render();
+	glTranslatef(105, 0, -75);
+	glRotated(90, 0, 1, 0);
+	glScalef(0.001, 0.001, 0.001);
+	glmDraw(pFlag, GLM_SMOOTH);
 	glutSwapBuffers();
 }
 
@@ -598,6 +594,7 @@ int main(int argc, char *argv[])
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
     pMonster = new Monster(eye,center);
 	pBullets = new Bullets(eye, center);
+	pFlag = glmReadOBJ("flag.obj");
 	//pEight = glmReadOBJ();
 	//pWomen = glmReadOBJ("01.obj");
 	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
