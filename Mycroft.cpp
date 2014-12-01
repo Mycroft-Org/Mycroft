@@ -10,6 +10,7 @@
 #include<sstream>  
 #include <windows.h>
 #include <mutex> 
+#include "Bullets.h"
 //#include <afxwin.h>
 #pragma comment(lib,"winmm.lib")
 using  namespace std;
@@ -20,8 +21,6 @@ using  namespace std;
 #include "Mouse.h"
 //#include "glm.h"
 #include "Monster.h"
-#include "Bullets.h"
-
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -63,7 +62,9 @@ bool bSpotLight = false;
 bool bPointer = false;
 bool CURSOR = false;
 bool wallTexture = false;
-GLuint texGround, texwall,texSky;
+GLuint texGround[3];
+GLuint texwall[3];
+GLuint texSky;
 GLMmodel *pWomen,*pEight;
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
@@ -78,13 +79,14 @@ void DrawTeapot();
 bool WallBlock(float x, float y, float z);
 bool TeapotAttack(float x, float y);
 void redraw_pointer();
+int ground_texture = 0;
+int wall_texture = 0;
 
 Jumper * pJumper;
 Mover *pMover;
 Mouse *pMouse;
 Monster * pMonster;
 Bullets * pBullets;
-
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -142,7 +144,7 @@ void key(unsigned char k, int x, int y)
 	case 'w':pMover->zoomIn();		break;
 	case 's':pMover->zoomOut();		break;
 	case ' ': pJumper->jump();       break;
-    case '1':pBullets->fire();      break;
+	case '1':pBullets->fire();      break;
 	}
 
 }
@@ -211,7 +213,7 @@ void textureGround()
 {
 	glEnable(GL_TEXTURE_2D);
 	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
-	glBindTexture(GL_TEXTURE_2D, texGround);
+	glBindTexture(GL_TEXTURE_2D, texGround[ground_texture]);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBegin(GL_QUADS);
 	//glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
@@ -227,8 +229,8 @@ void textureWall()
 {
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	if (!wallTexture)	glBindTexture(GL_TEXTURE_2D, texwall);
-	else	glBindTexture(GL_TEXTURE_2D, texGround);
+	if (!wallTexture)	glBindTexture(GL_TEXTURE_2D, texwall[wall_texture]);
+	else	glBindTexture(GL_TEXTURE_2D, texGround[ground_texture]);
 	for (int i = 0; i < 19; i++) {
 
 		glBegin(GL_QUADS);
@@ -336,68 +338,29 @@ DWORD WINAPI Dong(void *g)
 }
 
 
-float calc_dis(float x1, float y1, float x2, float y2){
-	float distance;
-	distance = sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
-	return distance;
-}
-void conflict(Monster *pMonster, Mover *pMover){
-	float en_pos[5][3];
-	float distance;
-	int i=0;
-	for (auto info : pMonster->monsterInfos){
-
-		en_pos[i][0] = info.now * 10;
-		en_pos[i][1] = 3;
-		en_pos[i][2] = -info.line * 10;
-		distance=calc_dis(en_pos[i][0],en_pos[i][2],eye[0],eye[2]);
-		if (distance < 3){
-			if (info.row_col&&!info.direction)
-			{
-				eye[0] = eye[0] - 0.2 - pMover->getMoveSpeed();
-				//SuspendThread(bgm);
 
 
-			}
-			if (info.row_col&&info.direction)
-			{
-				eye[0] = eye[0] + 0.2 + pMover->getMoveSpeed();
-			}
-			if (!info.row_col&&!info.direction)
-			{
-				eye[2] = eye[2] - 0.2 - pMover->getMoveSpeed();
-			}
-			if (!info.row_col&&info.direction)
-			{
-				eye[2] = eye[2] + 0.2 + pMover->getMoveSpeed();
-			}
-
-		}
-		i++;
-	}
-
-}
 void textureSky(){
-	float A = 100,Mx=50,Mz=-40,Time=2.0;
+	float A = 100, Mx = 50, Mz = -40, Time = 2.0;
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texSky);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A,0,Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
-		glTexCoord2f(Time, Time); glVertex3f(Mx - A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx - A, 0, Mz + A);
-	
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
-		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz - A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz - A);
-		
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx + A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx + A, A, Mz - A);
-		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
-		
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz + A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
-		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
+	glTexCoord2f(Time, Time); glVertex3f(Mx - A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx - A, 0, Mz + A);
 
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, A, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
-		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, A, Mz-  A);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
+	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz - A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz - A);
+
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx + A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx + A, A, Mz - A);
+	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
+
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz + A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
+	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
+
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, A, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
+	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, A, Mz - A);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
@@ -410,7 +373,7 @@ void redraw()
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase <= 1000.0 / frameRate)  return;
 		else timebase = time;
-
+	float speed = pMover->getMoveSpeed();
     pJumper->oneFrame();
     pMonster->oneFrame();
 
@@ -463,9 +426,8 @@ void redraw()
 	glTranslatef(0, 3.0, 0);
 	glScalef(0.004, 0.004, 0.004);
 	glmDraw(pModel, GLM_SMOOTH);*/
-	conflict(pMonster, pMover);
+	pMonster->conflict(speed);
     pMonster->render();
-    pBullets->render();
 	glutSwapBuffers();
 }
 
@@ -557,8 +519,6 @@ void processMenuEvents(int option) {
 		else
 			;
 		break;
-	case GRAPHYICS:
-		printf("hehe\n"); break;
 	case COPY:
 		grab();
 		break;
@@ -566,26 +526,78 @@ void processMenuEvents(int option) {
 		printf("cao\n"); break;
 	}
 }
+void SubMenuFunc1(int data)
+{
+	//GetCurrentMenu();
+	switch (data)
+	{
+	case 1:
+		ground_texture = 0;
+		break;
+	case 2:
+		ground_texture = 1;
+		break;
+	case 3:
+		ground_texture = 2;
+		break;
+	}
+}
 
+/*×Ó²Ëµ¥2*/
+void SubMenuFunc2(int data)
+{
+	switch (data)
+	{
+	case 1:
+		wall_texture = 0;
+		break;
+	case 2:
+		wall_texture =1;
+		break;
+	case 3:
+		wall_texture = 2;
+		break;
+	}
+}
 void createGLUTMenus() {
+	int subMenu1 = glutCreateMenu(SubMenuFunc1);
+	glutAddMenuEntry("GROUND_TEXTURE1", 1);
+	glutAddMenuEntry("GROUND_TEXTURE2", 2);
+	glutAddMenuEntry("GROUND_TEXTURE3", 3);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
+	int subMenu2 = glutCreateMenu(SubMenuFunc2);
+	glutAddMenuEntry("WALL_TEXTURE1", 1);
+	glutAddMenuEntry("WALL_TEXTURE2", 2);
+	glutAddMenuEntry("WALL_TEXTURE3", 3);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 	int menu;
 	menu = glutCreateMenu(processMenuEvents);
 	glutAddMenuEntry("TIPS/HIDE", MAP);
-	glutAddMenuEntry("GRAPHYICS", GRAPHYICS);
+	glutAddSubMenu("GROUND_TEX", subMenu1);
+	glutAddSubMenu("WALL_TEX", subMenu2);
 	glutAddMenuEntry("COPY", COPY);
 	glutAddMenuEntry("HELP", HELP);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 }
+void text_init(){
+	texGround[0] = load_texture("ground_0.bmp");
+	texGround[1] = load_texture("ground_1.bmp");
+	texGround[2] = load_texture("ground_2.bmp");
 
+	texwall[0] = load_texture("wall_0.bmp");
+	texwall[1] = load_texture("wall_1.bmp");
+	texwall[2] = load_texture("wall_2.bmp");
+	texSky = load_texture("sky_1.bmp");
+}
 int main(int argc, char *argv[])
 {
     pJumper = new Jumper(eye[1], center[1]);
-    pBullets = new Bullets(eye, center);
 	pMover = new Mover(eye, center,lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
-    pMonster = new Monster();
+    pMonster = new Monster(eye);
+	pBullets = new Bullets(eye, center);
 	//pEight = glmReadOBJ();
 	//pWomen = glmReadOBJ("01.obj");
 	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
@@ -594,9 +606,10 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(800, 600);
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
-	texGround = load_texture("ground_1.bmp");
+	text_init();
+	/*texGround = load_texture("ground_1.bmp");
 	texwall = load_texture("wall_1.bmp");
-	texSky = load_texture("sky_2.bmp");
+	texSky = load_texture("sky_1.bmp");*/
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);

@@ -1,6 +1,6 @@
 #include "Monster.h"
 
-Monster::Monster()
+Monster::Monster(float* eye) :eye(eye)
 {
     model = glmReadOBJ("eight.obj");
     MonsterInfo mv[] = {
@@ -12,7 +12,6 @@ Monster::Monster()
     };
     for (auto info : mv)
         monsterInfos.push_back(info);
-
 
 }
 
@@ -36,6 +35,7 @@ void Monster::render()
 void Monster::oneFrame()
 {
     for (auto info = monsterInfos.begin();info!=monsterInfos.end();info++) {
+		info->now;
         if (info->direction == true) {
             info->now += speed;
             if (info->now >= info->to) {
@@ -65,5 +65,43 @@ void Monster::oneFrame()
             directionHeight = true;
         }
     }
+}
+float calc_dis(float x1, float y1, float x2, float y2){
+	float distance;
+	distance = sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+	return distance;
+}
+void Monster::conflict(float speed){
+	float en_pos[5][3];
+	float distance;
+	int i = 0;
+	for (auto info : monsterInfos){
+
+		en_pos[i][0] = info.now * 10;
+		en_pos[i][1] = 3;
+		en_pos[i][2] = -info.line * 10;
+		distance = calc_dis(en_pos[i][0], en_pos[i][2], eye[0], eye[2]);
+		if (distance < 3){
+			if (info.row_col&&!info.direction)
+			{
+				eye[0] = eye[0] - 0.25 - speed;
+			}
+			if (info.row_col&&info.direction)
+			{
+				eye[0] = eye[0] + 0.25 + speed;
+			}
+			if (!info.row_col&&!info.direction)
+			{
+				eye[2] = eye[2] - 0.25 - speed;
+			}
+			if (!info.row_col&&info.direction)
+			{
+				eye[2] = eye[2] + 0.25 + speed;
+			}
+
+		}
+		i++;
+	}
+
 }
 

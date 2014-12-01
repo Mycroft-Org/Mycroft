@@ -17,19 +17,20 @@ struct MonsterInfo
 class Monster
 {
 public:
-	std::vector<MonsterInfo> monsterInfos;
-    Monster();
+	
+    Monster(float *eye);
     ~Monster();
     void render();
     void oneFrame();
+	void conflict(float speed);
 
 private:
+	std::vector<MonsterInfo> monsterInfos;
     GLMmodel * model;
     float position[2];
-    
+	float *eye;
     const float amplifier = 10;
     const float speed = 0.02;
-
     float height = 3;
     float maxHeight = 3.5;
     float minHeight = 2.5;
