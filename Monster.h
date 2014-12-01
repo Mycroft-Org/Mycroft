@@ -17,6 +17,7 @@ struct MonsterInfo
 class Monster
 {
 public:
+	std::vector<MonsterInfo> monsterInfos;
     Monster();
     ~Monster();
     void render();
@@ -25,7 +26,7 @@ public:
 private:
     GLMmodel * model;
     float position[2];
-    std::vector<MonsterInfo> monsterInfos;
+    
     const float amplifier = 10;
     const float speed = 0.02;
 

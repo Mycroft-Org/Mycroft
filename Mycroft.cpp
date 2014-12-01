@@ -343,10 +343,8 @@ float calc_dis(float x1, float y1, float x2, float y2){
 }
 void conflict(Monster *pMonster, Mover *pMover){
 	float en_pos[5][3];
-	float *eye;
 	float distance;
 	int i=0;
-	eye = pMover->eye;
 	for (auto info : pMonster->monsterInfos){
 
 		en_pos[i][0] = info.now * 10;

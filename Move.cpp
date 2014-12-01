@@ -15,9 +15,11 @@ void Mover::zoomIn(){
 	}
 	else if (WallBlock(eye0, eye2, eye[1]) == 1){
 		eye[0] = eye0;
+		center[0] = center[0] + moveSpeed*cos(lrRotate);
 	}
 	else if (WallBlock(eye0, eye2, eye[1] == 2)){
 		eye[2] = eye2;
+		center[2] = center[2] + moveSpeed*sin(lrRotate);
 	}
 
 }
@@ -34,9 +36,11 @@ void Mover::zoomOut(){
 	}
 	else if (WallBlock(eye0, eye2, eye[1]) == 1){
 		eye[0] = eye0;
+		center[0] = center[0] - moveSpeed*cos(lrRotate);
 	}
 	else if (WallBlock(eye0, eye2, eye[1] == 2)){
 		eye[2] = eye2;
+		center[2] = center[2] - moveSpeed*sin(lrRotate);
 	}
 }
 void Mover::turnLeft(){
