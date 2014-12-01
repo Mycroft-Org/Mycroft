@@ -81,7 +81,7 @@ void Monster::conflict(float speed){
 		en_pos[i][1] = 3;
 		en_pos[i][2] = -info.line * 10;
 		distance = calc_dis(en_pos[i][0], en_pos[i][2], eye[0], eye[2]);
-		if (distance < 3){
+		if (distance < 3&&eye[1]<=10){
 			if (info.row_col&&!info.direction)
 			{
 				eye[0] = eye[0] - 0.25 - speed;
