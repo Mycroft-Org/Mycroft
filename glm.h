@@ -1,3 +1,5 @@
+#ifndef _GLM_H
+#define _GLM_H
 /*    
       glm.h
       Nate Robins, 1997, 2000
@@ -280,3 +282,4 @@ glmWeld(GLMmodel* model, GLfloat epsilon);
  */
 GLubyte* 
 glmReadPPM(char* filename, int* width, int* height);
+#endif

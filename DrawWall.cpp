@@ -1,6 +1,7 @@
 //#include "glut.h"
 #include<GL/glut.h>
 #include <stdio.h>
+extern float eye[];
 float wall_row[][3] = {
     { -1, -1, 11},
 	{ 0, 1, 10 },
@@ -158,23 +159,27 @@ int WallBlock(float x, float y, float z)
 	return 0;
 }
 
-bool TeapotAttack(float x, float y)
+void drawPos(float *eye)
 {
-	x = x / amplifier;
-	y = -y / amplifier;
-	if ((x>2.1) && (x<2.1) && (y>2.1) && (y<2.1))
-		return true;
-	return false;
+	glColor3f(1.0f, 0.0f, 0.0f);
+	GLfloat size = 10;
+	glPointSize(size);
+	glBegin(GL_POINTS);
+	glVertex3f((eye[0]) / 50 - 1.0f, (3 - eye[2]) / 50 - 1.0f, 0.0f);
+	glEnd();
 }
-
-void DrawTeapot(){
+void drawLittle()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
 	glPushMatrix();
-	glMaterialfv(GL_FRONT, GL_AMBIENT, teapot_color);
-	// glTranslatef(20, 15 ,1);
-	glTranslatef(20, 20, 0);
-	glRotatef(90, 1, 0, 0);
-	glScalef(3, 3, 3);
-	glutSolidTeapot(1);
-	glPopMatrix();
+	glRotatef(-90, 1, 0, 0);
 
+	glTranslatef(-1.0f, 0.0f, -1.0f);
+	glScalef(2.0f, 0.5f, 2.5f);
+	ShowMap_Little();
+	glPopMatrix();
+	drawPos(eye);
+	glutSwapBuffers();
 }
+

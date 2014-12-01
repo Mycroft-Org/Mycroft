@@ -20,7 +20,6 @@ using  namespace std;
 #include "Jumper.h"
 #include "Move.h"
 #include "Mouse.h"
-//#include "glm.h"
 #include "Monster.h"
 
 /*Simple HELP
@@ -67,18 +66,17 @@ bool wallTexture = false;
 GLuint texGround[3];
 GLuint texwall[3];
 GLuint texSky;
-GLMmodel *pWomen, *pEight, *pFlag;
+
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
 int tips_count = 6;
+float eye[] = { 0, 5, 0 + D, 1 };
+float center[] = { 0, 5, 0 };
 std::mutex g_mutex;
 
 GLuint load_texture(const char* file_name);
-void ShowMap_Little();
-bool WallBlock(float x, float y, float z);
-bool TeapotAttack(float x, float y);
-void redraw_pointer();
+void drawLittle();
 int ground_texture = 0;
 int wall_texture = 0;
 
@@ -88,6 +86,7 @@ Mouse *pMouse;
 Monster * pMonster;
 Bullets * pBullets;
 Object * pObject;
+
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -122,8 +121,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-float eye[] = { 0, 5, 0 + D, 1 };
-float center[] = { 0, 5, 0 };
+
 DWORD WINAPI Dong(void *g);
 HANDLE bgm;
 void key(unsigned char k, int x, int y)
@@ -150,15 +148,6 @@ void key(unsigned char k, int x, int y)
 
 }
 
-void drawPos()
-{
-	glColor3f(1.0f, 0.0f, 0.0f);
-	GLfloat size = 10;
-	glPointSize(size);
-	glBegin(GL_POINTS);
-	glVertex3f((eye[0]) / 50 - 1.0f, (3 - eye[2]) / 50 - 1.0f, 0.0f);
-	glEnd();
-}
 
 
 void getFPS()
@@ -202,45 +191,6 @@ void getFPS()
 	glEnable(GL_LIGHTING);
 }
 
-void draw_solid_circle(float x, float y, float radius)
-{
-	int count;
-	int sections = 200;
-
-	GLfloat TWOPI = 2.0f * 3.14159f;
-
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(x, y, 0);
-
-	for (count = 0; count <= sections; count++)
-	{
-		glVertex2f(x + radius*cos(count*TWOPI / sections), y + radius*sin(count*TWOPI / sections));
-	}
-	glEnd();
-}
-void drawCompass(){
-	GLfloat White[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat Black[] = { 0.0, 0.0, 0.0, 1.0 };
-	int n = 360;
-	float R = 50, r = 10;
-	glDisable(GL_DEPTH_TEST);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, 480 * wWidth / wHeight, 0, 480, -1000, 1000);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMaterialfv(GL_FRONT, GL_AMBIENT, Black);
-	draw_solid_circle(R + 15, 100, R);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, White);
-	draw_solid_circle(65 + cos(-lrRotate)*(R - r - 5), 100 + sin(-lrRotate)*(R - r - 5), r);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glEnable(GL_DEPTH_TEST);
-}
 
 DWORD WINAPI Music(void *g)
 {
@@ -256,34 +206,7 @@ DWORD WINAPI Dong(void *g)
 	return 0;
 }
 
-
-void redraw()
-{
-	static int time, timebase = 0;
-	mouseMode ? pMouse->mouseMove_V2() : pMouse->mouseMove_V1();
-
-	time = glutGet(GLUT_ELAPSED_TIME);
-	if (time - timebase <= 1000.0 / frameRate)  return;
-	else timebase = time;
-	float speed = pMover->getMoveSpeed();
-	pJumper->oneFrame();
-	pMonster->oneFrame();
-    pBullets->oneFrame();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-
-	gluLookAt(eye[0], eye[1], eye[2],
-		center[0], center[1], center[2],
-		0, 1, 0);
-
-	if (bWire) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	glEnable(GL_DEPTH_TEST);
+void lightingConfig(){
 	glEnable(GL_LIGHTING);
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat dark[] = { 0.0, 0.0, 0.0, 1.0 };
@@ -307,54 +230,57 @@ void redraw()
 	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.);
 	glEnable(GL_LIGHT0);
 	bSpotLight ? glEnable(GL_LIGHT1) : glDisable(GL_LIGHT1);
+}
+void redraw()
+{
+	static int time, timebase = 0;
+
+	mouseMode ? pMouse->mouseMove_V2() : pMouse->mouseMove_V1();
+
+	time = glutGet(GLUT_ELAPSED_TIME);
+	if (time - timebase <= 1000.0 / frameRate)  return;
+	else timebase = time;
+	float speed = pMover->getMoveSpeed();
+	pJumper->oneFrame();
+	pMonster->oneFrame();
+    pBullets->oneFrame();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+
+	gluLookAt(eye[0], eye[1], eye[2],
+		center[0], center[1], center[2],
+		0, 1, 0);
+
+	bWire ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnable(GL_DEPTH_TEST);
+	lightingConfig();
 	pObject->textureGround();
 	pObject->textureWall();
 	pObject->textureSky();
-	drawCompass();
+	pObject->drawFlag();
+	pObject->drawCompass();
 	getFPS();
 	pMonster->conflict(speed);
 	pMonster->render();
     pBullets->render();
 
-    glPushMatrix();
-    glTranslatef(105, 0, -75);
-	glRotated(90, 0, 1, 0);
-	glScalef(0.001, 0.001, 0.001);
-	glmDraw(pFlag, GLM_SMOOTH);
-    glPopMatrix();
-
 	glutSwapBuffers();
 }
-
-void redraw_little()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-	glPushMatrix();
-	glRotatef(-90, 1, 0, 0);
-
-	glTranslatef(-1.0f, 0.0f, -1.0f);
-	glScalef(2.0f, 0.5f, 2.5f);
-	ShowMap_Little();
-	glPopMatrix();
-	drawPos();
-	glutSwapBuffers();
-}
-
-
 
 void create_subwindow()
 {
 	if (!bShow){
 		subwindowHandle = glutCreateSubWindow(windowHandle, 0, 0, 200, 100);
-		glutDisplayFunc(redraw_little);
+		glutDisplayFunc(drawLittle);
 		glutIdleFunc(idle);
 		bShow = !bShow;
 	}
-	/*else{
-	glutDestroyWindow(subwindowHandle);
-	bShow = !bShow;
-	}*/
+	else{
+		glutDestroyWindow(subwindowHandle);
+		bShow = !bShow;
+	}
 }
 
 void processMousePassiveMotion(int x, int y)
@@ -483,14 +409,14 @@ int main(int argc, char *argv[])
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
 	pMonster = new Monster(eye, center);
 	pBullets = new Bullets(eye, center);
-	pFlag = glmReadOBJ("flag.obj");
+	
 	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
-	pObject = new Object();
+	pObject = new Object(wWidth,wHeight,lrRotate);
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
