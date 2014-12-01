@@ -327,7 +327,7 @@ DWORD WINAPI Music(void *g)
 {
 	while (1) 
 	{
-		PlaySound("music/love.wav", 0, SND_FILENAME | SND_SYNC);
+		PlaySound("music/love_mini.wav", 0, SND_FILENAME | SND_SYNC);
 	}
 	return 0;
 }
