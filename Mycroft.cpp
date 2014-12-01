@@ -376,15 +376,29 @@ void conflict(Monster *pMonster, Mover *pMover){
 
 }
 void textureSky(){
+	float A = 100,Mx=50,Mz=-40,Time=2.0;
 	glPushMatrix();
-	GLUquadricObj *qobject = gluNewQuadric();
-	gluQuadricTexture(qobject, GL_TRUE);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texSky);
-	glTranslatef(50, 0, -40);
-	gluSphere(qobject, 70, 80, 80);
-	glDisable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A,0,Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
+		glTexCoord2f(Time, Time); glVertex3f(Mx - A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx - A, 0, Mz + A);
+	
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
+		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz - A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz - A);
+		
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx + A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx + A, A, Mz - A);
+		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
+		
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz + A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
+		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
+
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, A, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
+		glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, A, Mz-  A);
+	glEnd();
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 void redraw()
 { 
@@ -578,7 +592,7 @@ int main(int argc, char *argv[])
 	windowHandle = glutCreateWindow("Simple GLUT App");
 	texGround = load_texture("ground_1.bmp");
 	texwall = load_texture("wall_1.bmp");
-	texSky = load_texture("sky_1.bmp");
+	texSky = load_texture("sky_2.bmp");
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
