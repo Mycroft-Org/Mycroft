@@ -17,6 +17,8 @@ using  namespace std;
 #include "Mouse.h"
 //#include "glm.h"
 #include "Monster.h"
+#include "Bullets.h"
+
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -77,6 +79,7 @@ Jumper * pJumper;
 Mover *pMover;
 Mouse *pMouse;
 Monster * pMonster;
+Bullets * pBullets;
 
 void updateView(int width, int height)
 {
@@ -134,6 +137,7 @@ void key(unsigned char k, int x, int y)
 	case 'w':pMover->zoomIn();		break;
 	case 's':pMover->zoomOut();		break;
     case ' ':pJumper->jump();       break;
+    case '1':pBullets->fire();      break;
 	}
 
 }
@@ -386,6 +390,7 @@ void redraw()
 	glPopMatrix();*/
 
     pMonster->render();
+    pBullets->render();
 	glutSwapBuffers();
 }
 
@@ -502,6 +507,7 @@ void createGLUTMenus() {
 int main(int argc, char *argv[])
 {
     pJumper = new Jumper(eye[1], center[1]);
+    pBullets = new Bullets(eye, center);
 	pMover = new Mover(eye, center,lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
     pMonster = new Monster();
