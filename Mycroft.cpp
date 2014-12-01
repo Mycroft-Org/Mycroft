@@ -327,13 +327,13 @@ DWORD WINAPI Music(void *g)
 {
 	while (1) 
 	{
-		PlaySound("G:\\love.wav", 0, SND_FILENAME | SND_SYNC);
+		PlaySound("music/love.wav", 0, SND_FILENAME | SND_SYNC);
 	}
 	return 0;
 }
 DWORD WINAPI Dong(void *g)
 {
-		PlaySound("G:\\dong.wav", 0, SND_FILENAME | SND_SYNC);
+		PlaySound("music/dong.wav", 0, SND_FILENAME | SND_SYNC);
 	return 0;
 }
 
