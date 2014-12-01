@@ -22,6 +22,7 @@ using  namespace std;
 #include "Mouse.h"
 //#include "glm.h"
 #include "Monster.h"
+
 /*Simple HELP
 A:Turn left
 D:Turn right
@@ -309,15 +310,8 @@ void redraw()
 	pObject->textureGround();
 	pObject->textureWall();
 	pObject->textureSky();
-	//draw();
-	//glmDraw(pWomen,GLM_FLAT);
 	drawCompass();
 	getFPS();
-	//glutSolidSphere(0.1, 20, 20);
-	/*women1
-	glTranslatef(0, 3.0, 0);
-	glScalef(0.004, 0.004, 0.004);
-	glmDraw(pModel, GLM_SMOOTH);*/
 	pMonster->conflict(speed);
 	pMonster->render();
     pBullets->render();
@@ -489,8 +483,6 @@ int main(int argc, char *argv[])
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
 	pMonster = new Monster(eye, center);
 	pBullets = new Bullets(eye, center);
-	//pEight = glmReadOBJ();
-	//pWomen = glmReadOBJ("01.obj");
 	pFlag = glmReadOBJ("flag.obj");
 	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
 	glutInit(&argc, argv);
