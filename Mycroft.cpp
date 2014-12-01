@@ -1,4 +1,4 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <mutex> 
 #include "Bullets.h"
+#include "object.h"
 //#include <afxwin.h>
 #pragma comment(lib,"winmm.lib")
 using  namespace std;
@@ -65,7 +66,7 @@ bool wallTexture = false;
 GLuint texGround[3];
 GLuint texwall[3];
 GLuint texSky;
-GLMmodel *pWomen,*pEight,*pFlag;
+GLMmodel *pWomen, *pEight, *pFlag;
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
@@ -74,8 +75,6 @@ std::mutex g_mutex;
 
 GLuint load_texture(const char* file_name);
 void ShowMap_Little();
-void DrawWall();
-void DrawTeapot();
 bool WallBlock(float x, float y, float z);
 bool TeapotAttack(float x, float y);
 void redraw_pointer();
@@ -87,6 +86,7 @@ Mover *pMover;
 Mouse *pMouse;
 Monster * pMonster;
 Bullets * pBullets;
+Object * pObject;
 void updateView(int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -121,7 +121,7 @@ void idle()
 	glutPostRedisplay();
 }
 
-float eye[] = { 0, 5, 0+D ,1};
+float eye[] = { 0, 5, 0 + D, 1 };
 float center[] = { 0, 5, 0 };
 DWORD WINAPI Dong(void *g);
 HANDLE bgm;
@@ -129,11 +129,11 @@ void key(unsigned char k, int x, int y)
 {
 	switch (k) {
 	case 27:
-	case 'q': exit(0); break; 
-	case 'p': bPersp = !bPersp; updateView(wWidth, wHeight); break; 
-	case 'o': bWire = !bWire;             break; 
+	case 'q': exit(0); break;
+	case 'p': bPersp = !bPersp; updateView(wWidth, wHeight); break;
+	case 'o': bWire = !bWire;             break;
 	case 'l': bSpotLight = !bSpotLight;   break;
-	case 't': wallTexture = !wallTexture; break;
+	//case 't': wallTexture = !wallTexture; break;
 	case 'm': CURSOR = !CURSOR;	ShowCursor(CURSOR);	mouseMode = !mouseMode;	break;
 	case 'r':pMover->speedUp();     break;
 	case 'f':pMover->speedDown();   break;
@@ -148,14 +148,7 @@ void key(unsigned char k, int x, int y)
 	}
 
 }
-void draw()
-{
-	glPushMatrix();
-	glRotatef(-90, 1, 0, 0);
-	DrawWall();
-	DrawTeapot();
-	glPopMatrix();
-}
+
 void drawPos()
 {
 	glColor3f(1.0f, 0.0f, 0.0f);
@@ -208,81 +201,6 @@ void getFPS()
 	glEnable(GL_LIGHTING);
 }
 
-
-void textureGround()
-{
-	glEnable(GL_TEXTURE_2D);
-	GLfloat ground_color[] = { 0.01, 0.01, 0.01, 1.0 };
-	glBindTexture(GL_TEXTURE_2D, texGround[ground_texture]);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBegin(GL_QUADS);
-	//glMaterialfv(GL_FRONT, GL_AMBIENT, ground_color);
-	double dl = 100.0;
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(-500.0f, 0.0f, -500.0f);
-	glTexCoord2f(dl, 0.0f); glVertex3f(500.0f, 0.0f, -500.0f);
-	glTexCoord2f(dl, dl); glVertex3f(500.0f, 0.0f, 500.0f);
-	glTexCoord2f(0.0f, dl); glVertex3f(-500.0f, 0.0f, 500.0f);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-}
-void textureWall()
-{
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	if (!wallTexture)	glBindTexture(GL_TEXTURE_2D, texwall[wall_texture]);
-	else	glBindTexture(GL_TEXTURE_2D, texGround[ground_texture]);
-	for (int i = 0; i < 19; i++) {
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(5.0f*fabs(wall_row[i][2] - wall_row[i][1]), 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(5.0f*fabs(wall_row[i][2] - wall_row[i][1]), 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(5.0f*fabs(wall_row[i][2] - wall_row[i][1]), 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(5.0f*fabs(wall_row[i][2] - wall_row[i][1]), 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(0.7 / 2.0f, 5.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.7 / 2.0f, 0.0f); glVertex3f(10 * wall_row[i][1] - 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] - 0.35f);
-		glTexCoord2f(0.7 / 2.0f, 5.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 10.0f, -10 * wall_row[i][0] + 0.35f);
-		glTexCoord2f(0.7 / 2.0f, 0.0f); glVertex3f(10 * wall_row[i][2] + 0.1f, 0.0f, -10 * wall_row[i][0] + 0.35f);
-		glEnd();
-	}
-	for (int i = 0; i < 24; i++) {
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(5.0f*fabs(wall_col[i][2] - wall_col[i][1]), 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
-		glTexCoord2f(5.0f*fabs(wall_col[i][2] - wall_col[i][1]), 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(5.0f*fabs(wall_col[i][2] - wall_col[i][1]), 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
-		glTexCoord2f(5.0f*fabs(wall_col[i][2] - wall_col[i][1]), 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(0.7 / 2.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][1] + 0.1f);
-		glTexCoord2f(0.7 / 2.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][1] + 0.1f);
-
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
-		glTexCoord2f(0.0f, 5.0f); glVertex3f(10 * wall_col[i][0] - 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
-		glTexCoord2f(0.7 / 2.0f, 5.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 10.0f, -10 * wall_col[i][2] - 0.1f);
-		glTexCoord2f(0.7 / 2.0f, 0.0f); glVertex3f(10 * wall_col[i][0] + 0.35f, 0.0f, -10 * wall_col[i][2] - 0.1f);
-		glEnd();
-	}
-	glDisable(GL_TEXTURE_2D);
-}
 void draw_solid_circle(float x, float y, float radius)
 {
 	int count;
@@ -325,7 +243,7 @@ void drawCompass(){
 
 DWORD WINAPI Music(void *g)
 {
-	while (1) 
+	while (1)
 	{
 		PlaySound("music/love_mini.wav", 0, SND_FILENAME | SND_SYNC);
 	}
@@ -333,49 +251,22 @@ DWORD WINAPI Music(void *g)
 }
 DWORD WINAPI Dong(void *g)
 {
-		PlaySound("music/dong.wav", 0, SND_FILENAME | SND_SYNC);
+	PlaySound("music/dong.wav", 0, SND_FILENAME | SND_SYNC);
 	return 0;
 }
 
 
-
-
-void textureSky(){
-	float A = 100, Mx = 50, Mz = -40, Time = 2.0;
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texSky);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
-	glTexCoord2f(Time, Time); glVertex3f(Mx - A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx - A, 0, Mz + A);
-
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz - A);
-	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz - A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz - A);
-
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx + A, 0, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx + A, A, Mz - A);
-	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
-
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, 0, Mz + A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
-	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, 0, Mz + A);
-
-	glTexCoord2f(0.0f, 0.0f); glVertex3f(Mx - A, A, Mz - A);		glTexCoord2f(0.0f, Time); glVertex3f(Mx - A, A, Mz + A);
-	glTexCoord2f(Time, Time); glVertex3f(Mx + A, A, Mz + A);		glTexCoord2f(Time, 0.0f); glVertex3f(Mx + A, A, Mz - A);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-}
 void redraw()
-{ 
+{
 	static int time, timebase = 0;
 	mouseMode ? pMouse->mouseMove_V2() : pMouse->mouseMove_V1();
 
 	time = glutGet(GLUT_ELAPSED_TIME);
 	if (time - timebase <= 1000.0 / frameRate)  return;
-		else timebase = time;
+	else timebase = time;
 	float speed = pMover->getMoveSpeed();
-    pJumper->oneFrame();
-    pMonster->oneFrame();
+	pJumper->oneFrame();
+	pMonster->oneFrame();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -399,10 +290,10 @@ void redraw()
 	GLfloat blue[] = { 0.0, 0.0, 1.0, 1.0 };
 	GLfloat light_pos[] = { 0, 1, 1, 0 };
 	GLfloat light_dir[4] = { 0.0, 0.0, 0.0, 0.0 };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);	
+	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, mid);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);	
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
 	for (int i = 0; i < 3; i++)
 		light_dir[i] = center[i] - eye[i];
 	glLightfv(GL_LIGHT1, GL_POSITION, eye);
@@ -411,15 +302,23 @@ void redraw()
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, blue);
 	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 15);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_dir);
-	glLightf(GL_LIGHT1 ,GL_SPOT_EXPONENT, 2.);
-	glEnable(GL_LIGHT0); 
+	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.);
+	glEnable(GL_LIGHT0);
 	bSpotLight ? glEnable(GL_LIGHT1) : glDisable(GL_LIGHT1);
-	textureGround();
-	textureWall();
-	textureSky();
+	pObject->textureGround();
+	pObject->textureWall();
+	pObject->textureSky();
 	//draw();
+	//glmDraw(pWomen,GLM_FLAT);
 	drawCompass();
 	getFPS();
+	//glutSolidSphere(0.1, 20, 20);
+	/*women1
+	glTranslatef(0, 3.0, 0);
+	glScalef(0.004, 0.004, 0.004);
+	glmDraw(pModel, GLM_SMOOTH);*/
+	pMonster->conflict(speed);
+	pMonster->render();
 	glTranslatef(105, 0, -75);
 	glRotated(90, 0, 1, 0);
 	glScalef(0.001, 0.001, 0.001);
@@ -472,18 +371,18 @@ void grab(void)
 	GLubyte BMP_Header[54];
 	GLint i, j;
 	GLint PixelDataLength;
-	
-	i = WindowWidth * 3; 
-	while (i % 4 != 0) 
+
+	i = WindowWidth * 3;
+	while (i % 4 != 0)
 		++i;
 	PixelDataLength = i * WindowHeight;
 	pPixelData = (GLubyte*)malloc(PixelDataLength);
 	if (pPixelData == 0)
 		exit(0);
-	fopen_s(&pDummyFile,"1.bmp", "rb");
+	fopen_s(&pDummyFile, "1.bmp", "rb");
 	if (pDummyFile == 0)
 		exit(0);
-	fopen_s(&pWritingFile,"grab.bmp", "wb");
+	fopen_s(&pWritingFile, "grab.bmp", "wb");
 	if (pWritingFile == 0)
 		exit(0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -528,30 +427,29 @@ void SubMenuFunc1(int data)
 	switch (data)
 	{
 	case 1:
-		ground_texture = 0;
+		pObject->ground_texture = 0;
 		break;
 	case 2:
-		ground_texture = 1;
+		pObject->ground_texture = 1;
 		break;
 	case 3:
-		ground_texture = 2;
+		pObject->ground_texture = 2;
 		break;
 	}
 }
 
-/*×Ó²Ëµ¥2*/
 void SubMenuFunc2(int data)
 {
 	switch (data)
 	{
 	case 1:
-		wall_texture = 0;
+		pObject->wall_texture = 0;
 		break;
 	case 2:
-		wall_texture =1;
+		pObject->wall_texture = 1;
 		break;
 	case 3:
-		wall_texture = 2;
+		pObject->wall_texture = 2;
 		break;
 	}
 }
@@ -577,36 +475,24 @@ void createGLUTMenus() {
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 
 }
-void text_init(){
-	texGround[0] = load_texture("ground_0.bmp");
-	texGround[1] = load_texture("ground_1.bmp");
-	texGround[2] = load_texture("ground_2.bmp");
 
-	texwall[0] = load_texture("wall_0.bmp");
-	texwall[1] = load_texture("wall_1.bmp");
-	texwall[2] = load_texture("wall_2.bmp");
-	texSky = load_texture("sky_2.bmp");
-}
 int main(int argc, char *argv[])
 {
-    pJumper = new Jumper(eye[1], center[1]);
-	pMover = new Mover(eye, center,lrRotate);
+	pJumper = new Jumper(eye[1], center[1]);
+	pMover = new Mover(eye, center, lrRotate);
 	pMouse = new Mouse(eye, center, lrRotate, udRotate, wHeight, wWidth, mouseX, mouseY);
-    pMonster = new Monster(eye,center);
+	pMonster = new Monster(eye, center);
 	pBullets = new Bullets(eye, center);
-	pFlag = glmReadOBJ("flag.obj");
 	//pEight = glmReadOBJ();
 	//pWomen = glmReadOBJ("01.obj");
+	pFlag = glmReadOBJ("flag.obj");
 	bgm = CreateThread(0, 0, Music, NULL, 0, 0);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(800, 600);
 	ShowCursor(CURSOR);
 	windowHandle = glutCreateWindow("Simple GLUT App");
-	text_init();
-	/*texGround = load_texture("ground_1.bmp");
-	texwall = load_texture("wall_1.bmp");
-	texSky = load_texture("sky_1.bmp");*/
+	pObject = new Object();
 	glutDisplayFunc(redraw);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
