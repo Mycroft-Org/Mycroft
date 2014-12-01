@@ -376,6 +376,7 @@ void redraw()
 	float speed = pMover->getMoveSpeed();
     pJumper->oneFrame();
     pMonster->oneFrame();
+    pBullets->oneFrame();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -428,6 +429,7 @@ void redraw()
 	glmDraw(pModel, GLM_SMOOTH);*/
 	pMonster->conflict(speed);
     pMonster->render();
+    pBullets->render();
 	glutSwapBuffers();
 }
 
