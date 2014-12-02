@@ -4,11 +4,11 @@ Monster::Monster(float* eye, float* center) :eye(eye), center(center)
 {
     model = glmReadOBJ("eight.obj");
     MonsterInfo mv[] = {
-        { true, 1.5, 0.5, 2.5, 0.5, true },
-        { true, 2.5, 2.5, 4.5, 2.5, true },
-        { true, 7.5, 3.5, 8.5, 3.5, true },
-        { false, 6.5, 4.5, 6.5, 4.5, true },
-        { false, 9.5, 1.5, 2.5, 1.5, true }
+        { true, 1.5, 0.5, 2.5, 0.5, 1.0,true },
+		{ true, 2.5, 2.5, 4.5, 2.5, 1.0, true },
+		{ true, 7.5, 3.5, 8.5, 3.5, 1.0, true },
+		{ false, 6.5, 4.5, 6.5, 4.5, 1.0, true },
+		{ false, 9.5, 1.5, 2.5, 1.5, 1.0, true }
     };
     for (auto info : mv)
         monsterInfos.push_back(info);
@@ -21,6 +21,8 @@ Monster::~Monster()
 
 void Monster::render()
 {
+	float bloodColor[] = { 1.0, 1.0, 0.0, 1.0 };
+	float defaultColor[] = { 1.0, 1.0, 1.0, 1.0 };
     for (auto info : monsterInfos) {
         glPushMatrix();
         if (info.row_col == true) {
@@ -29,6 +31,13 @@ void Monster::render()
         else {
             glTranslatef(info.line*amplifier, height, -info.now*amplifier);
         }
+		glPushMatrix();
+		glTranslatef(0, 3, 0);
+		glScalef(0.1, 0.1, info.hp*2);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, bloodColor);
+		glutSolidCube(1);
+		glMaterialfv(GL_FRONT, GL_AMBIENT, defaultColor);
+		glPopMatrix();
         glScalef(0.05, 0.05, 0.05);
         glmDraw(model, GLM_SMOOTH);
         glPopMatrix();

@@ -11,6 +11,7 @@ struct MonsterInfo
     float from;
     float to;
     float now;
+	float hp;
     bool direction;
 };
 
