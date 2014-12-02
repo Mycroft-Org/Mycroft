@@ -25,7 +25,10 @@ void Monster::render()
         glPushMatrix();
         if (info.row_col == true) {
             glTranslatef(info.now*amplifier, height, -info.line*amplifier);
-        }        
+        }
+        else {
+            glTranslatef(info.line*amplifier, height, -info.now*amplifier);
+        }
         glScalef(0.05, 0.05, 0.05);
         glmDraw(model, GLM_SMOOTH);
         glPopMatrix();
