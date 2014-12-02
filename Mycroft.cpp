@@ -288,7 +288,13 @@ void processMousePassiveMotion(int x, int y)
 	mouseX = x;
 	mouseY = y;
 }
-
+void processMouse(int button, int state, int x, int y) 
+{
+	if ((state == GLUT_DOWN))
+		if (button == GLUT_LEFT_BUTTON) {
+			pBullets->fire();
+	}
+}
 void grab(void)
 {
 	FILE* pDummyFile;
@@ -421,6 +427,7 @@ int main(int argc, char *argv[])
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
 	glutIdleFunc(idle);
+	glutMouseFunc(processMouse);
 	glutPassiveMotionFunc(processMousePassiveMotion);
 	createGLUTMenus();
 	glutMainLoop();
