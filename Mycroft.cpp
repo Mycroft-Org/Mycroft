@@ -231,6 +231,40 @@ void lightingConfig(){
 	glEnable(GL_LIGHT0);
 	bSpotLight ? glEnable(GL_LIGHT1) : glDisable(GL_LIGHT1);
 }
+float calc_dis(float x1, float y1, float x2, float y2);
+void isattack(Monster *pMonster, Bullets *pBullets){
+	float en_pos[3];
+	for (auto it = pBullets->ware.begin(); it != pBullets->ware.end(); it++) {
+		for (auto info = pMonster->monsterInfos.begin(); info != pMonster->monsterInfos.end(); info++){
+			if (info->row_col){
+				en_pos[0] = info->now * 10;
+				en_pos[1] = 3;
+				en_pos[2] = -info->line * 10;
+			}
+			else{
+				en_pos[0] = info->line * 10;
+				en_pos[1] = 3;
+				en_pos[2] = -info->now * 10;
+			}
+			float dis = calc_dis(it->position[0], it->position[2],en_pos[0], en_pos[2]);
+			if (dis < 3 && !it->causedamage){
+				it->causedamage = true;
+				it->alive = false;
+				info->isattack = true;
+				if (info->hp >= 0)
+				{
+					info->hp -= 0.05;
+				}
+				else{
+					info->alive = false;
+				}
+			}
+			else
+				info->isattack = false;
+		}
+	}
+}
+
 void redraw()
 {
 	static int time, timebase = 0;
@@ -265,7 +299,7 @@ void redraw()
 	pMonster->conflict(speed);
 	pMonster->render();
     pBullets->render();
-
+	isattack(pMonster, pBullets);
 	glutSwapBuffers();
 }
 

@@ -13,20 +13,24 @@ struct MonsterInfo
     float now;
 	float hp;
     bool direction;
+	bool alive;
+	bool isattack;
+	int count;
 };
 
 class Monster
 {
 public:
-	
+	std::vector<MonsterInfo> monsterInfos;
     Monster(float *eye,float *center);
     ~Monster();
     void render();
     void oneFrame();
 	void conflict(float speed);
+	float ** getPos();
 
 private:
-	std::vector<MonsterInfo> monsterInfos;
+
     GLMmodel * model;
     float position[2];
 	float *eye;
