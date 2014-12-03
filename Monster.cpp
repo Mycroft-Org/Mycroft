@@ -77,6 +77,7 @@ void Monster::oneFrame()
                 info->now = info->from;
             }
         }
+        i++;
     }
     if (directionHeight == true) {
         height += speedHeight;
@@ -92,7 +93,6 @@ void Monster::oneFrame()
             directionHeight = true;
         }
     }
-	i++;
 }
 float calc_dis(float x1, float y1, float x2, float y2){
 	float distance;
