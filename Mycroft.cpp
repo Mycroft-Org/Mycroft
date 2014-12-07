@@ -67,6 +67,8 @@ GLuint texGround[3];
 GLuint texwall[3];
 GLuint texSky;
 
+GLfloat brightness = 0.5;
+
 int windowHandle, subwindowHandle, windowHandle2, subwindowHandle2;
 int wHeight = 0, wWidth = 0;
 int mouseX = 0, mouseY = 0;
@@ -144,6 +146,8 @@ void key(unsigned char k, int x, int y)
 	case 's':pMover->zoomOut();		break;
 	case ' ': pJumper->jump();       break;
 	case '1':pBullets->fire();      break;
+    case '=':brightness += 0.1; if (brightness > 1)brightness = 1; break;
+    case '-':brightness -= 0.1; if (brightness < 0)brightness = 0; break;
 	}
 
 }
@@ -211,7 +215,7 @@ void lightingConfig(){
 	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat dark[] = { 0.0, 0.0, 0.0, 1.0 };
 	GLfloat grey[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat mid[] = { 0.5, 0.5, 0.5, 1.0 };
+    GLfloat mid[] = { brightness, brightness, brightness, 1.0 };
 	GLfloat blue[] = { 0.0, 0.0, 1.0, 1.0 };
 	GLfloat light_pos[] = { 0, 1, 1, 0 };
 	GLfloat light_dir[4] = { 0.0, 0.0, 0.0, 0.0 };
