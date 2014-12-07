@@ -49,7 +49,7 @@ Bullets::~Bullets()
 void Bullets::fire()
 {
 	active = true;
-	counter =2;
+	counter =10;
 	ware.clear();
 	bulletWaiting = 0;
 }
