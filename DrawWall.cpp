@@ -148,14 +148,28 @@ int WallBlock(float x, float y, float z)
 		return 0;
 	// Row Walls
 	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++) {
-		if (x >= wall_row[i][1] && x <= wall_row[i][2] && y >= wall_row[i][0] - wall_widthB / 2 && y <= wall_row[i][0] + wall_widthB / 2)
+		if (x >= wall_row[i][1]-0.03 && x <= wall_row[i][2]+0.03 && y >= wall_row[i][0] - wall_widthB / 2 && y <= wall_row[i][0] + wall_widthB / 2)
 			return 1;
-	}
+	} 
 
 	// Column Walls
 	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++) {
-		if (y >= wall_col[i][1] && y <= wall_col[i][2] && x >= wall_col[i][0] - wall_widthB / 2 && x <= wall_col[i][0] + wall_widthB / 2)
+		if (y >= wall_col[i][1]-0.03 && y <= wall_col[i][2]+0.03 && x >= wall_col[i][0] - wall_widthB / 2 && x <= wall_col[i][0] + wall_widthB / 2)
 			return 2;
+	}
+	
+	for (int i = 0; i < sizeof(wall_row) / sizeof(wall_row[0]); i++){
+		if ((wall_row[i][1] -x< 0.01 && y >= wall_row[i][0] - wall_widthB / 2 && y <= wall_row[i][0] + wall_widthB / 2) || (x - wall_row[i][2]<0.01 && y >= wall_row[i][0] - wall_widthB / 2 && y <= wall_row[i][0] + wall_widthB / 2))
+		{
+			return 2;
+		}
+	}
+
+	for (int i = 0; i < sizeof(wall_col) / sizeof(wall_col[0]); i++){
+		if (( wall_col[i][1] -y< 0.01 && x >= wall_col[i][0] - wall_widthB / 2 && x <= wall_col[i][0] + wall_widthB / 2) || (y - wall_col[i][2]<0.01 && x >= wall_col[i][0] - wall_widthB / 2 &&x <= wall_col[i][0] + wall_widthB / 2))
+		{
+			return 1;
+		}
 	}
 	return 0;
 }
