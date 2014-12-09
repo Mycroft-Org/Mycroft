@@ -4,9 +4,11 @@ Mover::Mover(float * eye, float * center, float &lrRotate) :eye(eye), center(cen
 }
 
 void Mover::zoomIn(){
-	float eye0, eye2;
+	float eye0, eye2,eye01,eye21;
 	eye0 = eye[0] + moveSpeed*cos(lrRotate);
 	eye2 = eye[2] + moveSpeed*sin(lrRotate);
+	eye01 = eye0 + moveSpeed*cos(lrRotate);
+	eye21 = eye2 + moveSpeed*sin(lrRotate);
 	if (!WallBlock(eye0, eye2, eye[1])) {
 		eye[0] = eye0;
 		eye[2] = eye2;
@@ -14,12 +16,22 @@ void Mover::zoomIn(){
 		center[2] = center[2] + moveSpeed*sin(lrRotate);
 	}
 	else if (WallBlock(eye0, eye2, eye[1]) == 1){
-		eye[0] = eye0;
-		center[0] = center[0] + moveSpeed*cos(lrRotate);
+		if (WallBlock(eye01, eye2, eye[1]) == 2)
+			eye[0] = eye[0];
+		else
+		{
+			eye[0] = eye0;
+			center[0] = center[0] + moveSpeed*cos(lrRotate);
+		}
 	}
 	else if (WallBlock(eye0, eye2, eye[1] == 2)){
-		eye[2] = eye2;
-		center[2] = center[2] + moveSpeed*sin(lrRotate);
+		if (WallBlock(eye0, eye21, eye[1]) == 1)
+			eye[2] = eye[2];
+		else
+		{
+			eye[2] = eye2;
+			center[2] = center[2] + moveSpeed*sin(lrRotate);
+		}
 	}
 
 }
